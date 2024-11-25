@@ -1,0 +1,12 @@
+.venv
+venv
+.env
+.env.loc
+env
+venv
+.env
+
+.DS_Store
+
+__pycache__
+

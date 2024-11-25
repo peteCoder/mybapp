@@ -1,0 +1,96 @@
+<nav id="sidebar" class="sidebar js-sidebar bg-primary">
+    <div class="sidebar-content js-simplebar bg-bank-primary">
+        <a class="sidebar-brand" href="{% url 'dashboard_home' %}">
+            <span class="align-middle">FirstCitizen Bank</span>
+        </a>
+
+        <ul class="sidebar-nav">
+            <li class="sidebar-header">
+                Main Menu
+            </li>
+
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'dashboard_home' %}">
+                    <i class="align-middle" data-feather="home"></i>
+                    <span class="align-middle">Dashboard</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'accounts' %}">
+                    <i class="align-middle" data-feather="dollar-sign"></i>
+                    <span class="align-middle">Accounts</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'transactions' %}">
+                    <i class="align-middle" data-feather="repeat"></i>
+                    <span class="align-middle">Transactions</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'transfer_funds' %}">
+                    <i class="align-middle" data-feather="send"></i>
+                    <span class="align-middle">Transfer Funds</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'loans' %}">
+                    <i class="align-middle" data-feather="briefcase"></i>
+                    <span class="align-middle">Loans</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'profile' %}">
+                    <i class="align-middle" data-feather="user"></i>
+                    <span class="align-middle">Profile</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'support' %}">
+                    <i class="align-middle" data-feather="help-circle"></i>
+                    <span class="align-middle">Support</span>
+                </a>
+            </li>
+
+            <li class="sidebar-header">
+                Cards
+            </li>
+
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'credit_card_list' %}">
+                    <i class="align-middle" data-feather="credit-card"></i>
+                    <span class="align-middle">Credit Cards</span>
+                </a>
+            </li>
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'debit_card_list' %}">
+                    <i class="align-middle" data-feather="credit-card"></i>
+                    <span class="align-middle">Debit Cards</span>
+                </a>
+            </li>
+            <li class="sidebar-header">
+                Settings
+            </li>
+
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'settings' %}">
+                    <i class="align-middle" data-feather="settings"></i>
+                    <span class="align-middle">Account Info</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'logout' %}">
+                    <i class="align-middle" data-feather="log-out"></i>
+                    <span class="align-middle">Sign Out</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

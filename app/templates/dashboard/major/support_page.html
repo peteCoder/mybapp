@@ -1,0 +1,174 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3"><strong>Support</strong> Center</h1>
+
+        <!-- Form for Support Submission -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Submit a Support Request</h5>
+                        <form id="supportForm">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Subject</label>
+                                <input type="text" class="form-control" id="subject" name="subject"
+                                    placeholder="Enter the subject of your request" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="5"
+                                    placeholder="Provide a detailed description of your request" required></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="attachment" class="form-label">Attachment (optional)</label>
+                                <input type="file" class="form-control" id="attachment" name="attachment">
+                            </div>
+
+                            <button type="button" class="btn btn-primary" id="submitBtn">Submit Request</button>
+                            <span id="loadingText" style="display: none;">Submitting...</span>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="row mt-4">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Previous Support Requests</h5>
+                        <table class="table table-responsive">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Subject</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Date Submitted</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in supports %}
+                                <tr>
+                                    <th scope="row">{{ forloop.counter }}</th>
+                                    <td>{{ request.subject }}</td>
+                                    <td>
+                                        <span
+                                            class="badge {% if request.status == 'Pending' %} bg-warning {% elif request.status == 'Fulfilled' %} bg-success {% endif %}">
+                                            {{request.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ request.created_at }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No support requests submitted yet.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <!-- Modal for Success Confirmation -->
+        <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="successModalLabel">Success</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Your support request has been successfully submitted.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+{% endblock %}
+{% block script %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+<script>
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+        const subject = document.getElementById('subject').value;
+        const description = document.getElementById('description').value;
+
+        if (!subject) {
+            document.querySelector(".modal-body").innerText = "Subject is required";
+            new bootstrap.Modal(document.getElementById('successModal')).show();
+            return;
+        }
+        if (!description) {
+            document.querySelector(".modal-body").innerText = "Description is required";
+            new bootstrap.Modal(document.getElementById('successModal')).show();
+            return;
+        }
+        const attachment = document.getElementById('attachment').files[0];
+        const loadingText = document.getElementById('loadingText');
+        const csrfToken = '{{ csrf_token }}';
+
+        loadingText.style.display = 'inline';
+
+        // Construct form data
+        const formData = new FormData();
+        formData.append('subject', subject);
+        formData.append('description', description);
+        if (attachment) {
+            formData.append('image', attachment);
+        }
+
+        try {
+            const response = await fetch('/api/support/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                loadingText.style.display = 'none';
+                document.querySelector(".modal-body").innerText = "Thanks for your feedback. Please do not resend this message. We will respond in due time.";
+                new bootstrap.Modal(document.getElementById('successModal')).show();
+
+                setTimeout(() => {
+                    window.location.href = "{% url 'support' %}"
+                }, 4000)
+            } else {
+                alert('Error submitting support request. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            loadingText.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

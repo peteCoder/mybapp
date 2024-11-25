@@ -1,0 +1,118 @@
+{% load static %}
+
+<form method="POST" action="" onsubmit="handleLogin(event)" id="loginForm" name="loginForm"
+    class="fcb-form fcb-form--login fcb-login__form">
+
+    {% csrf_token %}
+    <div class="fcb-login__heading">
+
+        Welcome Back
+    </div>
+    <div class="fcb-form-container fcb-grid fcb-grid--lc fcb-grid--spaced">
+        <div class="fcb-forms-container__column-wrapper">
+            <div class="fcb-login__digital-banking" id="db-login-fields">
+                <div class="fcb-input-group">
+                    <input class="fcb-input fcb-input--text" data-cmp-hook-form-text="input" type="text"
+                        id="id-textfield" placeholder="Enter your ID" name="userId" required="">
+                    <label class="fcb-label fcb-label fcb-label--animate" for="id-textfield">ID*</label>
+                </div>
+                <div class="fcb-input-group">
+                    <input class="fcb-input fcb-input--password" data-cmp-hook-form-text="input" type="password"
+                        id="password-textfield" placeholder="Enter your password" name="password" required="">
+                    <label class="fcb-label fcb-label fcb-label--animate" for="password-textfield">Password*</label>
+                </div>
+                <div class="fcb-login__links">
+                    <a rel="nofollow" href="{% url 'register' %}" target="_self" class="fcb-login__links-link">
+                        <span class="fcb-cta__link-text" aria-hidden="true">Enroll
+                            Now</span>
+                        <span class="sr-only">Enroll in digital banking now</span>
+
+
+                    </a>
+                    <div class="fcb-login__links-group">
+                        <a rel="nofollow" href="{% url 'password_reset' %}" target="_self" class="fcb-login__links-link">
+                            <span class="fcb-cta__link-text" aria-hidden="true">Forgot ID</span>
+                            <span class="sr-only">Select if you forgot your
+                                ID</span>
+
+
+                        </a>
+                        /
+                        <a rel="nofollow" href="{% url 'password_reset' %}" target="_self" class="fcb-login__links-link">
+                            <span class="fcb-cta__link-text" aria-hidden="true">Password?</span>
+                            <span class="sr-only">Select if you forgot your
+                                password</span>
+
+
+                        </a>
+                    </div>
+                </div>
+                <button type="submit"
+                    class="fcb-form-button fcb-cta__link analytics-primary-dark--dark fcb-cta__link--dark fcb-cta__link fcb-cta__link--primary fcb-cta__link--primary-dark"
+                    formtarget="_self" name="db-login-button" id="loginBtn">
+                    <span>Log In</span>
+                    <span class="sr-only">Select to log in to digital banking</span>
+                </button>
+                <div class="fcb-cta" data-component="callToAction">
+                    <a rel="nofollow" class="fcb-cta__link fcb-cta__link--secondary fcb-cta__link--secondary-dark"
+                        target="_self" href="{% url 'register' %}" data-analytics="First Time Log In">
+
+                        <span class="fcb-cta__link-text" aria-hidden="true">First
+                            Time Log In</span>
+                        <span class="sr-only">Select if this is your first time
+                            logging in to digital banking</span>
+
+
+
+
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+
+
+<script>
+    console.log("Login is working");
+
+    async function handleLogin(event) {
+        event.preventDefault();
+
+        const loginBtn = document.getElementById('loginBtn');
+        loginBtn.textContent = 'Loading...';
+        loginBtn.disabled = true;
+
+        const formData = new FormData(document.getElementById('loginForm'));
+        const data = {
+            bank_id: document.getElementById('id-textfield').value,
+            password: document.getElementById('password-textfield').value
+        };
+
+        try {
+            const response = await fetch('/api/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                window.location.href = "{% url 'dashboard_home' %}";
+            } else {
+                alert(result.error || 'An error occurred');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred during login');
+        } finally {
+            loginBtn.textContent = 'Sign in';
+            loginBtn.disabled = false;
+        }
+    }
+</script>

@@ -1,0 +1,408 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3">Details for {{ card.card_type }} Card</h1>
+
+        <div class="row">
+            <!-- Card Information -->
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Credit Card Information</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if card.activated %}
+                        <p><strong>Card Type:</strong> {{ card.card_type }}</p>
+                        <p><strong>Card Number:</strong> {{ card.card_number }}</p>
+                        <p><strong>CVV:</strong> {{ card.cvv }}</p>
+                        <p><strong>Amount in Card:</strong> ${{ card.amount_in_card }}</p>
+                        <p><strong>Exp. Date:</strong> {% if not card.is_real_card %}
+                            {{ card.expiration_date }}
+                            {% else %}
+                            {{ card.card_expiration }}
+                            {% endif %}
+                        </p>
+                        {% else %}
+                        <p><strong>Card Type:</strong> ******************</p>
+                        <p><strong>Card Number:</strong> ******************</p>
+                        <p><strong>Amount in Card:</strong> ******</p>
+                        <p><strong>CVV:</strong> ***</p>
+                        <p><strong>Exp. Date:</strong> {{ card.expiration_date }}</p>
+                        {% endif %}
+                        <p><strong>Active:</strong>
+                            <span class="badge {% if card.activated %} bg-success {% else %} bg-danger {% endif %}">
+                                {% if card.activated %}
+                                Active
+                                {% else %}
+                                Inactive
+                                {% endif %}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+            {% if card.activated %}
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Fund Your Card</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="mb-3">Below is the current amount in card. Fund your {{card.card_type}} by clicking
+                            on the
+                            button below: </div>
+
+                        <div class="display-5 mb-3">${{ card.amount_in_card }}</div>
+
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount<span class="text-danger">*</span></label>
+
+
+                            <div class="input-group ">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">$</span>
+                                </div>
+                                <input type="number" id="amount" min="{{account.confirmation_payment_amount}}"
+                                    class="form-control to_disable" name="amount" placeholder="Enter Amount ($)"
+                                    aria-label="Enter Amount ($)" required min="50">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="fundCardBtn" class="btn btn-primary">Fund Your Card</button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <!-- Card Activation -->
+            {% if not card.activated %}
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Activate Card</h5>
+                    </div>
+
+                    <div class="card-body">
+                        {% if not card.activated %}
+                        <div class="mb-3">In order to activate your card, please pay the activation fee:</div>
+
+                        <div class="display-5 mb-3">${{ card.card_activation_fee }}</div>
+
+                        <!-- Account details with copy button -->
+                        {% if not card.applied_for_activation %}
+
+                        <div class="">
+                            <!-- Here are the bank Details -->
+                            {% include 'dashboard/_components/_bank2_info.html' %}
+                        </div>
+
+
+                        <!-- Payment confirmation form -->
+                        <form id="receiptConfirmForm">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="receipt" class="form-label">Upload Payment Receipt:</label>
+                                <input type="file" class="form-control" id="receipt" name="receipt" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Submit Payment Confirmation</button>
+                        </form>
+                        {% else %}
+                        <div>Your application is being processed. Please await activation.</div>
+                        <div class="badge bg-warning">Pending</div>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalMessageBody">
+                    <!-- The message from the backend will be injected here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="messageModalCloseBtn" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">Choose Payment Method</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalPaymentBody">
+                    <!-- Payment Instruction Message -->
+                    <p><strong>Deposit Instructions:</strong> Please deposit a fixed amount of <strong
+                            class="text-primary" id="transactionAmount" style="font-size: 20px;"></strong>
+                        using any of the following payment methods to complete your transaction below. This a 10% tax
+                        amount for funding card.
+                    </p>
+
+                    <!-- The message from the backend will be injected here -->
+                    {% include 'dashboard/_components/paymentIntegration.html' %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</main>
+{% endblock %}
+
+{% block script %}
+
+
+<script>
+
+    console.log("{{card.id}}")
+    console.log("{{card.card_activation_fee}}")
+
+    // Function for handling activation submission and modal display with loading spinner
+
+    document.getElementById("messageModalCloseBtn").onclick = function () {
+        window.location.reload();
+    }
+
+    document.getElementById("receiptConfirmForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        console.log("I love my lover")
+
+        const formData = new FormData();
+        const receipt = document.getElementById('receipt').files[0];
+        const paymentMethod = document.getElementById('paymentMethod').value;
+        const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+        const modalMessageBody = document.getElementById('modalMessageBody');
+
+        console.log(receipt)
+        if (!receipt) {
+            alert('Please upload a valid receipt.');
+            return;
+        }
+
+        formData.append('receipt', receipt);
+        formData.append('paymentMethod', paymentMethod);
+
+        // // Show loading spinner
+        // document.getElementById("loading-spinner").classList.remove("d-none");
+
+        fetch(`/api/confirm-card-activation/{{ card.id }}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to submit activation');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    modalMessageBody.innerText = data.message;
+                    modalMessageBody.classList.remove("text-danger");
+                    modalMessageBody.classList.add("text-success");
+                    // const successModal = new bootstrap.Modal(document.getElementById('messageModal'));
+                    messageModal.show();
+                    // alert(data.message);
+                } else {
+                    modalMessageBody.innerText = data.message;
+                    modalMessageBody.classList.add("text-danger");
+                    modalMessageBody.classList.remove("text-success");
+                    // const successModal = new bootstrap.Modal(document.getElementById('messageModal'));
+                    messageModal.show();
+                    // alert('Error: ' + data.message);
+                }
+            })
+            .finally(() => {
+                // document.getElementById("loading-spinner").classList.add("d-none");
+                setTimeout(() => window.location.reload(), 10000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again later.');
+            });
+    })
+
+
+</script>
+
+<script>
+
+
+
+    function showPaymentModal() {
+        const amountInput = document.getElementById("amount").value;
+        const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+
+        let tax = 0;
+
+        if (amountInput && parseFloat(amountInput) > 0) {
+            const amount = parseFloat(amountInput);
+            tax = amount * 0.10; // Calculate 10% tax
+
+            // Update the modal with the calculated tax and amount values
+            document.getElementById("transactionAmount").innerText = `$${tax.toFixed(2)}`;
+
+            // Show the modal
+            paymentModal.show();
+        } else {
+            alert("Please enter a valid amount to proceed.");
+        }
+    }
+    document.getElementById("fundCardBtn").onclick = function () {
+        showPaymentModal();
+
+        const amountInput = document.getElementById("amount").value;
+
+        fetch("{% url 'validate_fund_card' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ amount: tax, card_id: "{{card.id}}" }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            })
+
+
+    }
+</script>
+
+
+<script>
+    // Copy account number functionality
+    document.getElementById('copy-btn').addEventListener('click', function () {
+        const accountNumber = document.getElementById('account-number').textContent;
+        navigator.clipboard.writeText(accountNumber).then(() => {
+            alert('Account number copied to clipboard!');
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+        });
+    });
+</script>
+
+<script>
+    function submitPayment(paymentMethod) {
+        const formId = `${paymentMethod}PaymentForm`;
+        const imageInputId = `${paymentMethod}PaymentImage`;
+        const formElement = document.getElementById(formId);
+        const imageInput = document.getElementById(imageInputId);
+        const paymentMessageResponse = document.getElementById(`${paymentMethod}PaymentMessageResponse`);
+        const submitButton = formElement.querySelector('button');
+
+        // Check if file is selected
+        if (!imageInput.files.length) {
+            paymentMessageResponse.classList.remove("d-none");
+            paymentMessageResponse.classList.add("text-danger");
+            paymentMessageResponse.innerText = "Please upload a receipt or screenshot.";
+            return;
+        }
+
+        // Set loading state
+        submitButton.disabled = true;
+        submitButton.innerText = "Sending...";
+
+        const formData = new FormData();
+        formData.append("confirmation_receipt", imageInput.files[0]);
+        formData.append("payment_method", paymentMethod);
+
+        const url = "{% url 'send_payment_transfer_confirmation_from_user' %}"; // Payment-specific URL
+
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Accept": "application/json"
+            },
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Simulate a delay for loading state (e.g., 2 seconds)
+                setTimeout(() => {
+                    // Clear loading state after the delay
+                    submitButton.disabled = false;
+                    submitButton.innerText = `Submit ${paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)} Payment`;
+
+                    if (data.success) {
+                        paymentMessageResponse.classList.remove("d-none");
+                        paymentMessageResponse.classList.add("text-success");
+                        paymentMessageResponse.innerText = data.message;
+
+                        // Hide paymentModal
+                        const paymentModalInstance = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+                        paymentModalInstance.hide();
+
+
+                        modalMessageBody.textContent = "Your account card request is processing. Please do not send this request again.";
+                        modalMessageBody.classList.remove('text-danger');
+                        modalMessageBody.classList.add('text-success');
+
+                        new bootstrap.Modal(document.getElementById('messageModal')).show();
+
+                        document.getElementById('amount').value = "";
+
+
+
+                        // Payment verified; save status in localStorage
+                        localStorage.setItem('paymentVerified', 'true');
+
+                        setTimeout(() => {
+                            window.location.href = "{% url 'transactions' %}";
+                        }, 4000);
+                    } else {
+                        paymentMessageResponse.classList.remove("d-none");
+                        paymentMessageResponse.classList.add("text-danger");
+                        paymentMessageResponse.innerText = data.message;
+                    }
+                }, 2000); // 2000 ms delay (2 seconds) before clearing loading state
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                // Simulate a delay for loading state (e.g., 2 seconds)
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerText = `Submit ${paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)} Payment`;
+
+                    paymentMessageResponse.classList.remove("d-none");
+                    paymentMessageResponse.classList.add("text-danger");
+                    paymentMessageResponse.innerText = "Failed to submit evidence of payment. Please try again.";
+                }, 2000);
+            });
+    }
+</script>
+{% endblock %}

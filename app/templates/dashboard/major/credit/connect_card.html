@@ -1,0 +1,133 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+
+
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3"><strong>Connect an Existing Credit Card</strong></h1>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+
+                    <div id="message" class="p-2"></div>
+                    <div class="card-body">
+                        <form id="createCardForm">
+
+
+                            <div class="mb-3">
+                                <label for="card_type" class="form-label">Choose Card Type:</label>
+                                <select class="form-select" id="card_type" name="loan_type" required>
+                                    <option value="" disabled selected>Select loan type</option>
+                                    {% for card_type in available_card_types %}
+                                    <option value="{{ card_type }}">{{ card_type }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div id="message"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="card_number" class="form-label">Card Number: </label>
+                                <input type="number" required placeholder="i.e 5555669400322579" class="form-control"
+                                    id="card_number" name="card_number">
+                                <div id="message"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="name_in_card" class="form-label">Name on Card: </label>
+                                <input type="text" required placeholder="John Doe" class="form-control"
+                                    id="name_in_card" name="name_in_card">
+                                <div id="message"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="card_expiration" class="form-label">Expiration time: </label>
+                                <input type="text" required placeholder="10/27" class="form-control"
+                                    id="card_expiration" name="card_expiration">
+                                <div id="message"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cvv" class="form-label">CVV: </label>
+                                <input type="text" required placeholder="123" class="form-control" id="cvv" name="cvv">
+                                <div id="message"></div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Connect Card</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Loan Guidelines</h5>
+                        <ul>
+                            <li>Ensure you meet the minimum income requirements before applying.</li>
+                            <li>Loan terms and conditions apply based on your credit score.</li>
+                            <li>Provide accurate information to avoid delays in processing.</li>
+                            <li>Interest rates vary by loan type and duration.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+{% endblock %}
+
+
+{% block script %}
+<script>
+    document.getElementById('createCardForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const card_type = document.getElementById('card_type').value;
+        const card_number = document.getElementById('card_number').value;
+        const cvv = document.getElementById('cvv').value;
+        const name_in_card = document.getElementById('name_in_card').value;
+        const card_expiration = document.getElementById('card_expiration').value;
+
+        console.log({
+            card_type: card_type,
+            card_number: card_number,
+            cvv: cvv,
+            name_in_card: name_in_card,
+            card_expiration: card_expiration
+        })
+
+        fetch('{% url "connect_new_card" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({
+                card_type: card_type,
+                card_number: card_number,
+                cvv: cvv,
+                name_in_card: name_in_card,
+                card_expiration: card_expiration
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('message').innerText = data.message;
+                setTimeout(() => {
+                    window.location.href = `{% url 'debit_card_list' %}`;
+                }, 2000);  // Reload after 2 seconds if successful
+            })
+            .catch(error => {
+                document.getElementById('message').innerText = error.message;
+            });
+    });
+</script>
+
+{% endblock %}

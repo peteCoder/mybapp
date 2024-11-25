@@ -1,0 +1,149 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+
+{% block style %}
+<style>
+    .asterisks {
+        color: red;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="content">
+    {% if user.can_apply_for_loans %}
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3"><strong>Loan Request</strong></h1>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="" method="post">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label for="loan_type" class="form-label">Loan Type</label>
+                                <select class="form-select" id="loan_type" name="loan_type" required>
+                                    <option value="" disabled selected>Select loan type</option>
+                                    <option value="personal">Personal Loan</option>
+                                    <option value="mortgage">Mortgage</option>
+                                    <option value="auto">Auto Loan</option>
+                                    <option value="business">Business Loan</option>
+                                </select>
+                            </div>
+
+                            <!-- <div class="mb-3">
+                                <label for="loan_amount" class="form-label">Loan Amount</label>
+                                <input type="number" class="form-control" id="loan_amount" name="loan_amount"
+                                    placeholder="Enter loan amount" required min="0">
+                            </div> -->
+
+                            <div class="mb-3">
+                                <label for="loan_amount" class="form-label">Loan Amount <span class="asterisks">*</span>
+                                </label>
+                                <div class="input-group ">
+                                    <div class="input-group-prepend">
+                                        <span style="border-radius: 0px !important;" class="input-group-text">$</span>
+                                    </div>
+                                    <input type="number" class="form-control" id="loan_amount" name="loan_amount"
+                                        aria-label="Loan Amount (to the nearest dollar)" placeholder="Enter loan amount"
+                                        required min="0" required>
+                                    <div class="input-group-append">
+                                        <span style="border-radius: 0px !important;" class="input-group-text">.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="loan_term" class="form-label">Loan Term (Months)</label>
+                                <input type="number" class="form-control" id="loan_term" name="loan_term"
+                                    placeholder="Enter loan term (e.g., 12 months)" required min="1" max="12">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="interest_rate" class="form-label">Interest Rate</label>
+                                <input type="text" class="form-control" id="interest_rate" name="interest_rate" readonly
+                                    value="10%">
+                            </div>
+
+
+
+                            <div class="mb-3">
+                                <label for="interest" class="form-label">Interest Amount
+                                </label>
+                                <div class="input-group ">
+                                    <div class="input-group-prepend">
+                                        <span style="border-radius: 0px !important;" class="input-group-text">$</span>
+                                    </div>
+                                    <input type="number" class="form-control" id="interest" name="interest"
+                                        aria-label="Loan Interest Amount (to the nearest dollar)" readonly min="0">
+                                    <div class="input-group-append">
+                                        <span style="border-radius: 0px !important;" class="input-group-text">.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="repayment" class="form-label">Total Repayment Amount
+                                </label>
+                                <div class="input-group ">
+                                    <div class="input-group-prepend">
+                                        <span style="border-radius: 0px !important;" class="input-group-text">$</span>
+                                    </div>
+                                    <input type="number" class="form-control" id="repayment" name="repayment"
+                                        aria-label="Loan Repayment Amount (to the nearest dollar)" readonly min="0">
+                                    <div class="input-group-append">
+                                        <span style="border-radius: 0px !important;" class="input-group-text">.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <button type="submit" class="btn btn-primary">Submit Loan Request</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+
+    <div class="container-fluid p-0">
+        <div class="d-flex justify-content-between align-items-start flex-column flex-wrap mb-5 mt-5">
+            <h1 class="h3"><strong>Loans</strong></h1>
+            <div class="">You are not eligible to apply for loans. Contact us via our livechat server or email us at
+                contact@firstcitizen.com.</div>
+        </div>
+
+    </div>
+
+
+    {% endif %}
+</main>
+{% endblock %}
+
+{% block script %}
+<script>
+    const loanAmountInput = document.getElementById('loan_amount');
+    const loanTermInput = document.getElementById('loan_term');
+    const interestInput = document.getElementById('interest');
+    const repaymentInput = document.getElementById('repayment');
+    const interestRate = 10;  // 10% interest rate
+
+    function calculateInterest() {
+        const principal = parseFloat(loanAmountInput.value) || 0;
+        const term = parseInt(loanTermInput.value) || 0;
+        const interest = (principal * interestRate * term) / 100;
+        const totalRepayment = principal + interest;
+
+        interestInput.value = interest.toFixed(2);
+        repaymentInput.value = totalRepayment.toFixed(2);
+    }
+
+    loanAmountInput.addEventListener('input', calculateInterest);
+    loanTermInput.addEventListener('input', calculateInterest);
+</script>
+{% endblock %}

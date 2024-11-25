@@ -1,0 +1,64 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-0">
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-5 mt-5">
+            <h1 class="h3"><strong>Loans</strong></h1>
+            {% if user.can_apply_for_loans %}
+            {% if loan_count < 3 %} <a href="{% url 'create_loan' %}" class="btn btn-primary">Apply for New Loan</a>
+                {% endif %}
+                {% endif %}
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Principal</th>
+                                        <th>Months</th>
+                                        <th>Percentage</th>
+                                        <th>Interest</th>
+                                        <th>Repayment Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for loan in loans %}
+                                    <tr>
+                                        <td>{{ loan.get_loan_type_display }}</td>
+                                        <td>
+                                            {% if loan.activated %}
+                                            <span class="badge bg-success">Approved</span>
+                                            {% else %}
+                                            <span class="badge bg-warning">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>₦{{ loan.amount }}</td>
+                                        <td>{{ loan.loan_term }}</td>
+                                        <td>{{ loan.interest_rate }}%</td>
+                                        <td>₦{{ loan.interest }}</td>
+                                        <td>₦{{ loan.repayment_amount }}</td>
+                                        <td>
+                                            <a href="{% url 'loan_detail' loan.id %}"
+                                                class="btn btn-info btn-sm">Details</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</main>
+{% endblock %}

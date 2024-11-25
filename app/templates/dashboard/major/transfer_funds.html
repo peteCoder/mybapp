@@ -1,0 +1,760 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+
+
+{% block style %}
+<style>
+    #errorMessage {
+        margin-top: 15px;
+        padding: 10px;
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        border-radius: 4px;
+    }
+
+    #successMessage {
+        margin-top: 15px;
+        padding: 10px;
+        background-color: #10ca10;
+        color: white;
+        border: 1px solid #10ca10;
+        border-radius: 4px;
+    }
+</style>
+
+
+{% endblock %}
+
+
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3"><strong>Transfer Funds</strong></h1>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card p-2">
+
+
+                    <div class="card-body">
+                        <form id="transferForm">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label for="from_account" class="form-label">From Account<span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select to_disable" id="from_account" name="from_account" required>
+                                    <option value="" disabled selected>Select account</option>
+                                    {% for account in accounts %}
+                                    <option value="{{ account.id }}">{{ account.account_number }} -
+                                        ${{account.balance}} - {{ account.account_type }}</option>
+                                    {% endfor %}
+                                </select>
+                                <span class="text-sm">Only activated accounts can make a transfer.</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="to_account" class="form-label">To Account <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" class="form-control to_disable" id="to_account" name="to_account"
+                                    placeholder="Recipient Account Number" required>
+
+
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="bank_name" class="form-label">Bank Name<span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control to_disable" id="bank_name" name="bank_name"
+                                    placeholder="Recipient Bank Name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="location" class="form-label ">Location<span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control to_disable" id="location" name="location"
+                                    placeholder="Bank Location" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">Amount<span class="text-danger">*</span></label>
+
+
+                                <div class="input-group ">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">$</span>
+                                    </div>
+                                    <input type="number" id="amount" class="form-control to_disable" name="amount"
+                                        placeholder="Enter Amount ($)" aria-label="Enter Amount ($)" required min="50">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="ach_routing" class="form-label">ACH Routing (Optional)</label>
+                                <input type="text" class="form-control to_disable" id="ach_routing" name="ach_routing"
+                                    placeholder="ACH Routing Number">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="beneficiary_name" class="form-label">Beneficiary Name<span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control to_disable" id="beneficiary_name"
+                                    name="beneficiary_name" placeholder="Beneficiary Name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Beneficiary Address<span
+                                        class="text-danger">*</span></label>
+                                <textarea class="form-control to_disable" id="address" name="address"
+                                    placeholder="Beneficiary Address" required rows="2"></textarea>
+                            </div>
+
+
+                            <button type="button" class="btn btn-link cancel_transfer d-none">Cancel Transfer</button>
+                            <button type="submit" class="btn btn-primary">Transfer</button>
+                        </form>
+
+
+                    </div>
+                    <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+                    <div id="successMessage" class="alert alert-success" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Transfer Guidelines</h5>
+                        <ul>
+                            <li>Ensure the recipient's account number is correct before proceeding.</li>
+                            <li>Transfers above a certain amount may require verification.</li>
+                            <li>Check your available balance before making a transfer.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Confirmation Modal -->
+    <div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="otpModalLabel">Confirm Transfer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="otpSection">
+                        <p>
+                            An OTP was sent to your mail. Please do not close this modal.
+                            Please confirm the transaction with the OTP code that was sent to your mail.
+                            If you did not receive a mail, click on Resend OTP.
+                        </p>
+
+                        <p class="otpMessage" id="otpMessage" class="d-none"></p>
+                        <form id="otpForm">
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Enter your OTP<span
+                                        class="text-danger">*</span></label>
+                                <input class="form-control" id="password" name="password" required>
+                            </div>
+                            <button type="button" id="resendOTP" class="btn btn-link text-primary p-0 mb-3">Resend
+                                OTP
+                                <span id="loadingMessage" style="margin-left: 8px;"
+                                    class="d-none spinner-border spinner-border-sm" role="status"
+                                    aria-hidden="true"></span>
+                                <!-- <span id="loadingMessage" class="d-none" style="margin-left: 8px;">Sending...</span> -->
+                            </button>
+                            <div class="d-flex align-items-center">
+                                <button type="submit" class="btn btn-success">Confirm Transfer</button>
+                                <div id="loadingIndicator" class="ms-3" style="font-weight: bold; display: none;">0%
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalMessageBody">
+                    <!-- The message from the backend will be injected here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">Choose Payment Method</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalPaymentBody">
+                    <!-- Payment Instruction Message -->
+                    <p><strong>Deposit Instructions:</strong> Please deposit a fixed amount of <strong
+                            class="text-primary" style="font-size: 20px;">$500</strong> as
+                        the cost of transfer. You can use any of the following payment methods to complete your payment:
+                    </p>
+
+                    <!-- The message from the backend will be injected here -->
+                    {% include 'dashboard/_components/paymentIntegration.html' %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Tax Modal -->
+    <div class="modal fade" id="taxModal" tabindex="-1" aria-labelledby="taxModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="taxModalLabel">10% Tax Requirement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Tax Instruction Message -->
+                    <p><strong>Tax Requirement:</strong> In order to proceed with the transfer transaction, you are
+                        required to pay a 10% tax on the transaction amount.</p>
+                    <p><strong>Transaction Amount:</strong> <span class="text-primary"
+                            id="transactionAmount">$0.00</span></p>
+                    <p><strong>Tax Amount (10%):</strong> <span class="text-primary" id="taxAmount">$0.00</span></p>
+                    <p>Please complete the tax payment using the available payment methods.</p>
+                    <div class="">
+                        <!-- The message from the backend will be injected here -->
+                        {% include 'dashboard/_components/taxpaymentintegration.html' %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+</main>
+
+{% endblock %}
+
+{% block script %}
+
+
+
+<script>
+    window.addEventListener("DOMContentLoaded", function () {
+        localStorage.removeItem("otpVerified")
+        localStorage.removeItem("taxVerified")
+        localStorage.removeItem("paymentVerified")
+        localStorage.removeItem("transferDetails")
+    })
+</script>
+
+
+
+<script>
+    const cancelTransfer = document.querySelector(".cancel_transfer");
+
+
+    const disableAllFields = function () {
+        const allFields = document.querySelectorAll(".to_disable");
+        if (cancelTransfer.classList.contains("d-none")) {
+            cancelTransfer.classList.remove("d-none");
+        }
+        for (let i = 0; i < allFields.length; i++) {
+            allFields[i].disabled = true;
+        }
+    }
+
+    const disableAllFieldsWithoutRemovingCancel = function () {
+        const allFields = document.querySelectorAll(".to_disable");
+        for (let i = 0; i < allFields.length; i++) {
+            allFields[i].disabled = false;
+        }
+    }
+
+    const removeDisableFromAllFields = function () {
+
+        const allFields = document.querySelectorAll(".to_disable");
+        if (!cancelTransfer.classList.contains("d-none")) {
+            cancelTransfer.classList.add("d-none");
+        }
+        for (let i = 0; i < allFields.length; i++) {
+            allFields[i].disabled = false;
+        }
+
+        localStorage.removeItem("otpVerified")
+        localStorage.removeItem("taxVerified")
+        localStorage.removeItem("paymentVerified")
+    }
+
+    const clearAllFields = () => {
+        const allFields = document.querySelectorAll(".to_disable");
+        for (let i = 0; i < allFields.length; i++) {
+            allFields[i].disabled = false;
+            allFields[i].value = "";
+        }
+
+        localStorage.removeItem("otpVerified")
+        localStorage.removeItem("taxVerified")
+        localStorage.removeItem("paymentVerified")
+        localStorage.removeItem("transferDetails")
+    }
+
+    cancelTransfer.addEventListener("click", function () {
+        removeDisableFromAllFields();
+    })
+</script>
+
+
+
+
+
+
+
+<script>
+
+
+    function setLoadingState(button, isLoading) {
+        if (isLoading) {
+            // Disable the button and show spinner
+            button.disabled = true;
+            button.innerHTML += `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+        } else {
+            // Enable the button and remove spinner
+            button.disabled = false;
+            const spinner = button.querySelector('.spinner-border');
+            if (spinner) {
+                spinner.remove();
+            }
+        }
+    }
+
+
+    function showTaxModal() {
+        const amountInput = document.getElementById("amount").value;
+        const taxModal = new bootstrap.Modal(document.getElementById('taxModal'));
+
+        if (amountInput && parseFloat(amountInput) > 0) {
+            const amount = parseFloat(amountInput);
+            const tax = amount * 0.10; // Calculate 10% tax
+
+            // Update the modal with the calculated tax and amount values
+            document.getElementById("transactionAmount").innerText = `$${amount.toFixed(2)}`;
+            document.getElementById("taxAmount").innerText = `$${tax.toFixed(2)}`;
+
+            // Show the modal
+            taxModal.show();
+        } else {
+            alert("Please enter a valid amount to proceed.");
+        }
+    }
+
+
+
+
+    document.getElementById('transferForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+
+
+
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        // setLoadingState(submitButton, true);
+
+        const formData = new FormData(this);
+
+        console.log("Form Data", formData)
+        if (localStorage.getItem('taxVerified') === 'true') {
+            // disableAllFieldsWithoutRemovingCancel();
+            setLoadingState(submitButton, true);
+
+            const currentData = JSON.parse(localStorage.getItem("transferDetails"));
+            // Send Transfer Data
+            fetch("{% url 'final_process_transfer' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(currentData)
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    setTimeout(() => {
+                        setLoadingState(submitButton, false);
+
+                        modalMessageBody.textContent = data.message;
+                        modalMessageBody.classList.add('text-success');
+                        modalMessageBody.classList.remove('text-danger');
+
+                        clearAllFields();
+
+                        // Show the modal
+                        new bootstrap.Modal(document.getElementById('messageModal')).show();
+
+                        // setTimeout(() => {
+                        //     window.location.href = ""
+                        // }, 2000)
+
+                    }, 3000)
+
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    setTimeout(() => {
+                        setLoadingState(submitButton, false);
+
+
+                    }, 3000)
+                })
+
+
+        } else {
+            if (localStorage.getItem('paymentVerified') === 'true') {
+                // new bootstrap.Modal(document.getElementById('taxModal')).show();
+                showTaxModal(); // Show the tax modal
+            } else {
+                if (localStorage.getItem('otpVerified') === 'true') {
+
+                    new bootstrap.Modal(document.getElementById('paymentModal')).show();
+                } else {
+
+
+                    const formData = new FormData(this);
+
+                    fetch("{% url 'validate_transfer' %}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}",
+                            "Accept": "application/json"
+                        },
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            setLoadingState(submitButton, false);
+                            const modalMessageBody = document.getElementById('modalMessageBody');
+                            if (data.success) {
+                                // document.getElementById('otpSection').style.display = 'block';
+                                localStorage.setItem('transferDetails', JSON.stringify(Object.fromEntries(formData)));
+
+                                // Show the modal
+                                new bootstrap.Modal(document.getElementById('otpModal')).show();
+                                // Disable field
+                                disableAllFields();
+                            } else {
+                                modalMessageBody.textContent = data.message;
+                                modalMessageBody.classList.remove('text-success');
+                                modalMessageBody.classList.add('text-danger');
+                                // Show the modal
+                                new bootstrap.Modal(document.getElementById('messageModal')).show();
+                            }
+                            // Show the modal
+                            // new bootstrap.Modal(document.getElementById('messageModal')).show();
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            setLoadingState(submitButton, false);
+                        });
+                }
+            }
+
+        }
+
+
+
+    });
+
+    document.getElementById("resendOTP").addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const otpMessage = document.getElementById("otpMessage");
+        const loadingMessage = document.getElementById("loadingMessage");
+
+        // Show loading state
+        loadingMessage.classList.remove("d-none");
+
+        // Clear any previous messages
+        otpMessage.classList.add("d-none");
+
+        // Send the fetch request
+        fetch("{% url 'resend_otp_code' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ transaction_type: "transfer" }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+
+                // Hide loading message
+                loadingMessage.classList.add("d-none");
+
+                // Show success or error message
+                otpMessage.classList.remove("d-none");
+                otpMessage.classList.add(data.success ? "text-success" : "text-danger");
+                otpMessage.innerText = data.message;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+
+                // Hide loading message
+                loadingMessage.classList.add("d-none");
+
+                // Show error message
+                otpMessage.classList.remove("d-none");
+                otpMessage.classList.add("text-danger");
+                otpMessage.innerText = "Failed to resend OTP. Please try again.";
+            });
+    });
+
+
+
+
+
+
+    document.getElementById('otpForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const confirmButton = e.target.querySelector('button[type="submit"]');
+        setLoadingState(confirmButton, true);
+
+        const password = document.getElementById('password').value;
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        loadingIndicator.style.display = 'inline';
+        let loadingPercent = 10;
+
+        // Start loading animation
+        const loadingInterval = setInterval(() => {
+            if (loadingPercent < 90) {
+                loadingIndicator.textContent = `${loadingPercent}%`;
+                loadingPercent += 10;
+            } else {
+                clearInterval(loadingInterval);
+
+                // Send OTP verification request
+                fetch("{% url 'confirm_transfer' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "Accept": "application/json",
+                    },
+                    body: JSON.stringify({ password })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        setLoadingState(confirmButton, false);
+                        if (data.success) {
+                            loadingIndicator.textContent = '100%';
+
+                            // OTP verified; save status in localStorage
+                            localStorage.setItem('otpVerified', 'true');
+
+
+                            // Hide otpModal before showing paymentModal
+                            const otpModalInstance = bootstrap.Modal.getInstance(document.getElementById('otpModal'));
+                            otpModalInstance.hide();
+
+                            // Show paymentModal
+                            new bootstrap.Modal(document.getElementById('paymentModal')).show();
+                        } else {
+                            loadingIndicator.textContent = 'Failed';
+                            loadingIndicator.classList.add('text-danger');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        setLoadingState(confirmButton, false);
+                    });
+            }
+        }, 1500);
+    });
+
+
+</script>
+
+<script>
+    function submitPayment(paymentMethod) {
+        const formId = `${paymentMethod}PaymentForm`;
+        const imageInputId = `${paymentMethod}PaymentImage`;
+        const formElement = document.getElementById(formId);
+        const imageInput = document.getElementById(imageInputId);
+        const paymentMessageResponse = document.getElementById(`${paymentMethod}PaymentMessageResponse`);
+        const submitButton = formElement.querySelector('button');
+
+        // Check if file is selected
+        if (!imageInput.files.length) {
+            paymentMessageResponse.classList.remove("d-none");
+            paymentMessageResponse.classList.add("text-danger");
+            paymentMessageResponse.innerText = "Please upload a receipt or screenshot.";
+            return;
+        }
+
+        // Set loading state
+        submitButton.disabled = true;
+        submitButton.innerText = "Sending...";
+
+        const formData = new FormData();
+        formData.append("confirmation_receipt", imageInput.files[0]);
+        formData.append("payment_method", paymentMethod);
+
+        const url = "{% url 'send_payment_transfer_confirmation_from_user' %}"; // Payment-specific URL
+
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Accept": "application/json"
+            },
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Simulate a delay for loading state (e.g., 2 seconds)
+                setTimeout(() => {
+                    // Clear loading state after the delay
+                    submitButton.disabled = false;
+                    submitButton.innerText = `Submit ${paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)} Payment`;
+
+                    if (data.success) {
+                        paymentMessageResponse.classList.remove("d-none");
+                        paymentMessageResponse.classList.add("text-success");
+                        paymentMessageResponse.innerText = data.message;
+
+                        // Hide paymentModal
+                        const paymentModalInstance = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+                        paymentModalInstance.hide();
+
+                        // Payment verified; save status in localStorage
+                        localStorage.setItem('paymentVerified', 'true');
+                    } else {
+                        paymentMessageResponse.classList.remove("d-none");
+                        paymentMessageResponse.classList.add("text-danger");
+                        paymentMessageResponse.innerText = data.message;
+                    }
+                }, 2000); // 2000 ms delay (2 seconds) before clearing loading state
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                // Simulate a delay for loading state (e.g., 2 seconds)
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerText = `Submit ${paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)} Payment`;
+
+                    paymentMessageResponse.classList.remove("d-none");
+                    paymentMessageResponse.classList.add("text-danger");
+                    paymentMessageResponse.innerText = "Failed to submit payment. Please try again.";
+                }, 2000);
+            });
+    }
+
+    function submitTaxPayment(paymentMethod) {
+        const formId = `${paymentMethod}TaxForm`;
+        const imageInputId = `${paymentMethod}TaxImage`;
+        const formElement = document.getElementById(formId);
+        const imageInput = document.getElementById(imageInputId);
+        const paymentMessageResponse = document.getElementById(`${paymentMethod}PaymentTaxMessageResponse`);
+        const submitButton = formElement.querySelector('button');
+
+        console.log("This is the tax btn action: ", paymentMethod)
+
+        // Check if file is selected
+        if (!imageInput.files.length) {
+            paymentMessageResponse.classList.remove("d-none");
+            paymentMessageResponse.classList.add("text-danger");
+            paymentMessageResponse.innerText = "Please upload a receipt or screenshot.";
+            return;
+        }
+
+        // Set loading state
+        submitButton.disabled = true;
+        submitButton.innerText = "Sending...";
+
+        const formData = new FormData();
+        formData.append("confirmation_receipt", imageInput.files[0]);
+        formData.append("payment_method", paymentMethod);
+
+        const url = "{% url 'send_tax_payment_transfer_confirmation_from_user' %}"; // Tax-specific URL
+
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Accept": "application/json"
+            },
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Simulate a delay for loading state (e.g., 2 seconds)
+                setTimeout(() => {
+                    // Clear loading state after the delay
+                    submitButton.disabled = false;
+                    submitButton.innerText = `Submit ${paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)} Payment`;
+
+                    if (data.success) {
+                        paymentMessageResponse.classList.remove("d-none");
+                        paymentMessageResponse.classList.add("text-success");
+                        paymentMessageResponse.innerText = data.message;
+
+                        // Hide paymentModal before showing taxModal
+                        const taxModalInstance = bootstrap.Modal.getInstance(document.getElementById('taxModal'));
+                        taxModalInstance.hide();
+
+                        // Payment verified; save status in localStorage
+                        localStorage.setItem('taxVerified', 'true');
+
+                        // Show taxModal
+                        // showTaxModal();
+                    } else {
+                        paymentMessageResponse.classList.remove("d-none");
+                        paymentMessageResponse.classList.add("text-danger");
+                        paymentMessageResponse.innerText = data.message;
+                    }
+                }, 2000); // 2000 ms delay (2 seconds) before clearing loading state
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                // Simulate a delay for loading state (e.g., 2 seconds)
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerText = `Submit ${paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)} Payment`;
+
+                    paymentMessageResponse.classList.remove("d-none");
+                    paymentMessageResponse.classList.add("text-danger");
+                    paymentMessageResponse.innerText = "Failed to submit payment. Please try again.";
+                }, 2000);
+            });
+    }
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3">Loan Detail</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <p><strong>Loan Type:</strong> {{ loan.get_loan_type_display }}</p>
+                        <p><strong>Amount:</strong> ${{ loan.amount }}</p>
+                        <p><strong>Term:</strong> {{ loan.loan_term }} months</p>
+                        <p><strong>Interest:</strong> ${{ loan.interest }}</p>
+                        <p><strong>Total Repayment:</strong> ${{ loan.repayment_amount }}</p>
+                        <p><strong>Status:</strong>
+                            {% if loan.is_paid %}
+                            <span class="badge bg-success">Paid</span>
+                            {% else %}
+                            <span class="badge bg-danger">Unpaid</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activation Section -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Loan Activation</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if not loan.activated %}
+
+
+                        {% if not loan.applied_for_activation %}
+                        <p>To activate your loan, the interest rate of <span class="h2">${{ loan.interest }}</span> is
+                            required. Your loan will
+                            be active when the receipt confirming your payment has been evaluated.</p>
+
+                        <div class="">
+                            <!-- Here are the bank Details -->
+                            {% include 'dashboard/_components/_bank2_info.html' %}
+                        </div>
+                        <form method="POST" action="{% url 'confirm_loan_activation_payment' loan.id %}"
+                            enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="receipt" class="form-label">Upload Payment Receipt:</label>
+                                <input type="file" class="form-control" id="receipt" name="receipt" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Payment Confirmation</button>
+                        </form>
+                        {% else %}
+                        <p>Your activation request is currently under review. Our team is diligently verifying your
+                            submitted documents and will provide an update within 24 hours. During this period, your
+                            loan remains in a pending status.
+                            We kindly request your patience while we complete this process. Once your loan has been
+                            appproved,
+                            it will be automatically added to your chosen account.
+                        </p>
+                        <div class="badge bg-danger">Pending</div>
+                        {% endif %}
+                        {% else %}
+                        <p>Your account is active.</p>
+                        <div class="badge bg-success">Active</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

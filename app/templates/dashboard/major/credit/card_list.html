@@ -1,0 +1,117 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block content %}
+
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3"><strong>Credit Cards</strong></h1>
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-5 mt-5">
+            {% if not card_count > 3 %}
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <a href="{% url 'create_credit_card' %}" class="btn-primary btn">Apply for Credit Card</a>
+                <a href="{% url 'connect_credit_card' %}" class="btn-primary btn">Connect an Existing Credit Card</a>
+            </div>
+
+            {% endif %}
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Card Type</th>
+                                        <th>Card Number</th>
+                                        <th>CVV</th>
+                                        <th>Exp. Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for card in cards %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'credit_card_detail' card.id %}">{{ card.card_type }}</a>
+                                        </td>
+                                        <td>
+                                            {% if card.activated %}
+                                            {{ card.card_number }}
+                                            {% else %}
+                                            **********
+                                            {% endif %}
+                                        </td>
+                                        <td>{% if card.activated %} {{ card.cvv }} {% else %} *** {% endif %}</td>
+                                        <td>
+                                            {% if card.card_expiration %}
+                                            <span class="">
+
+                                                <span class="exp-date">
+                                                    {{ card.card_expiration }}
+                                                </span>
+                                            </span>
+                                            {% else %}
+                                            <span class="">
+
+                                                <span class="exp-date" data-date="{{ card.expiration_date }}">
+                                                    {{ card.expiration_date }}
+                                                </span>
+                                            </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="">
+                                                {% if card.activated %}
+                                                <span class="badge bg-success">Active</span>
+                                                {% else %}
+                                                <span class="badge bg-danger">Inactive</span>
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No available Cards</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+    // Function to convert "Oct. 20, 2028" to "MM/YY" format
+    function formatExpirationDate(dateString) {
+        const date = new Date(dateString);
+
+        // Extract month and year
+        const month = ('0' + (date.getMonth() + 1)).slice(-2); // Add 1 to getMonth() as it is zero-indexed
+        const year = date.getFullYear().toString().slice(-2);  // Get last two digits of the year
+
+        return `${month}/${year}`;
+    }
+
+    // Convert all expiration dates in the table
+    document.addEventListener('DOMContentLoaded', function () {
+        const expDates = document.querySelectorAll('.exp-date');
+        expDates.forEach(function (span) {
+            const rawDate = span.getAttribute('data-date');
+            const formattedDate = formatExpirationDate(rawDate);
+            span.textContent = formattedDate;
+        });
+    });
+</script>
+{% endblock %}

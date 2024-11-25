@@ -1,0 +1,157 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="alert alert-success" id="success-message" style="display: none;">Profile updated successfully!</div>
+<div class="alert alert-danger" id="error-message" style="display: none;">Error updating profile. Please try again.
+</div>
+
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3"><strong>Profile</strong> Settings</h1>
+
+        <div class="row">
+            <!-- User Information -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Personal Information</h5>
+                        <form id="personal-info-form">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name"
+                                    value="{{ user.first_name }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name"
+                                    value="{{ user.last_name }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone_number" class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" id="phone_number" name="phone_number"
+                                    value="{{ user.phone_number }}" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address Information -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Address Information</h5>
+                        <form id="address-info-form">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Street Address</label>
+                                <input type="text" class="form-control" id="address" name="address"
+                                    value="{{ user.address }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="city" value="{{ user.city }}"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="state" name="state" value="{{ user.state }}"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="postal_code" class="form-label">Postal Code</label>
+                                <input type="text" class="form-control" id="postal_code" name="postal_code"
+                                    value="{{ user.postal_code }}" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Address</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <!-- Password Change -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Change Password</h5>
+                        <form id="password-change-form">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="old_password" class="form-label">Current Password</label>
+                                <input type="password" class="form-control" id="old_password" name="old_password"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="new_password" class="form-label">New Password</label>
+                                <input type="password" class="form-control" id="new_password" name="new_password"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirm_password" class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control" id="confirm_password"
+                                    name="confirm_password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Password</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block script %}
+<script>
+    // Helper function to handle form submission
+    async function submitForm(formId, url) {
+        const form = document.getElementById(formId);
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                document.getElementById('success-message').style.display = 'block';
+                document.getElementById('error-message').style.display = 'none';
+            } else {
+                document.getElementById('error-message').innerText = data.message || "Error updating profile.";
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('success-message').style.display = 'none';
+            }
+        } catch (error) {
+            document.getElementById('error-message').innerText = data.message || "Error updating profile. Please try again.";
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+        }
+    }
+
+    // Handle submission for each form separately
+    document.getElementById('personal-info-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        submitForm('personal-info-form', "{% url 'update_personal_info' %}");
+    });
+
+    document.getElementById('address-info-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        submitForm('address-info-form', "{% url 'update_address_info' %}");
+    });
+
+    document.getElementById('password-change-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        submitForm('password-change-form', "{% url 'update_password' %}");
+    });
+</script>
+{% endblock %}

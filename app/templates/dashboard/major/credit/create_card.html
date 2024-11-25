@@ -1,0 +1,107 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+
+
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3"><strong>Create a New Credit Card</strong></h1>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+
+                    <div id="message" class="p-2"></div>
+                    <div class="card-body">
+                        <form id="createCardForm">
+
+                            <div class="mb-3">
+                                <label for="card_type" class="form-label">Choose Account To Connect Card:</label>
+                                <select class="form-select" id="account_type" name="account_type" required>
+                                    <option value="" disabled selected>Select account type</option>
+                                    {% for account in accounts %}
+                                    <option value="{{ account.id }}">{{ account.account_type }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div id="message"></div>
+                            </div>
+
+
+
+                            <div class="mb-3">
+                                <label for="card_type" class="form-label">Choose Card Type:</label>
+                                <select class="form-select" id="card_type" name="card_type" required>
+                                    <option value="" disabled selected>Select card type</option>
+                                    {% for card_type in available_card_types %}
+                                    <option value="{{ card_type }}">{{ card_type }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div id="message"></div>
+                            </div>
+
+
+                            <button type="submit" class="btn btn-primary">Create Card</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Loan Guidelines</h5>
+                        <ul>
+                            <li>Ensure you meet the minimum income requirements before applying.</li>
+                            <li>Loan terms and conditions apply based on your credit score.</li>
+                            <li>Provide accurate information to avoid delays in processing.</li>
+                            <li>Interest rates vary by loan type and duration.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+{% endblock %}
+
+
+{% block script %}
+<script>
+    document.getElementById('createCardForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const cardType = document.getElementById('card_type').value;
+        const accountType = document.getElementById('account_type').value;
+
+        fetch('{% url "create_credit_card" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            // body: `card_type=${cardType}`,
+            body: JSON.stringify({ card_type: cardType, account_type: accountType }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('message').innerText = data.message;
+                setTimeout(() => {
+                    window.location.href = `{% url 'credit_card_list' %}`;
+                }, 2000);  // Reload after 2 seconds if successful
+            })
+            .catch(error => {
+                document.getElementById('message').innerText = error.message;
+            });
+    });
+</script>
+
+{% endblock %}

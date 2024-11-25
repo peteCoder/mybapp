@@ -1,0 +1,120 @@
+<div class="accordion accordion-flush" id="accordionFlushExample">
+  <!-- Crypto Address Payment Method -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="flush-headingCrypto">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+        data-bs-target="#flush-collapseCrypto" aria-expanded="false" aria-controls="flush-collapseCrypto">
+        Crypto Address
+      </button>
+    </h2>
+    <div id="flush-collapseCrypto" class="accordion-collapse collapse" aria-labelledby="flush-headingCrypto"
+      data-bs-parent="#accordionFlushExample">
+      <div class="accordion-body">
+        <p><strong>Payment Instructions:</strong> Please upload a screenshot or receipt of your crypto transaction for
+          verification. Ensure the transaction ID and amount paid are visible.</p>
+
+        <p><strong>Crypto Address:</strong> 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa</p>
+        <form id="cryptoTaxForm">
+          <label for="cryptoTaxImage" class="form-label">Upload Receipt or Transaction Screenshot</label>
+          <input class="form-control" type="file" id="cryptoTaxImage" name="cryptoTaxImage" accept="image/*">
+          <div class="cryptoPaymentTaxMessageResponse" id="cryptoPaymentTaxMessageResponse"></div>
+          <button type="button" class="btn btn-primary mt-2" onclick="submitTaxPayment('crypto')">Submit Crypto
+            Payment</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Bank Information Payment Method -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="flush-headingBank">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+        data-bs-target="#flush-collapseBank" aria-expanded="false" aria-controls="flush-collapseBank">
+        Bank Information
+      </button>
+    </h2>
+    <div id="flush-collapseBank" class="accordion-collapse collapse" aria-labelledby="flush-headingBank"
+      data-bs-parent="#accordionFlushExample">
+      <div class="accordion-body">
+        <p><strong>Payment Instructions:</strong> Please upload a screenshot or receipt of your bank transfer for
+          verification. The payment amount and bank details must be visible.</p>
+
+        <div class="row">
+          <div class="col-12 col-md-6">
+            <p><strong>Account Name:</strong> John Doe</p>
+            <p><strong>Bank Name:</strong> First Bank</p>
+          </div>
+          <div class="col-12 col-md-6">
+            <p><strong>Account Number:</strong> 1234567890</p>
+            <p><strong>Sort Code:</strong> 11-22-33</p>
+          </div>
+        </div>
+
+
+        <form id="bankTaxForm">
+          <label for="bankTaxImage" class="form-label">Upload Receipt or Bank Transfer Screenshot</label>
+          <input class="form-control" type="file" id="bankTaxImage" name="bankTaxImage" accept="image/*">
+          <div class="bankPaymentTaxMessageResponse" id="bankPaymentTaxMessageResponse"></div>
+          <button type="button" class="btn btn-primary mt-2" onclick="submitTaxPayment('bank')">Submit Bank
+            Payment</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Paypal Payment Method -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="flush-headingPaypal">
+      <!-- <div class="paypalPaymentTaxMessageResponse" id="paypalPaymentTaxMessageResponse"></div> -->
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+        data-bs-target="#flush-collapsePaypal" aria-expanded="false" aria-controls="flush-collapsePaypal">
+        Paypal
+      </button>
+    </h2>
+    <div id="flush-collapsePaypal" class="accordion-collapse collapse" aria-labelledby="flush-headingPaypal"
+      data-bs-parent="#accordionFlushExample">
+      <div class="accordion-body">
+        <p><strong>Payment Instructions:</strong> Please upload a screenshot or receipt of your Paypal payment. The
+          transaction ID and amount should be visible for verification.</p>
+
+        <p><strong>Paypal Email:</strong> johndoe@gmail.com</p>
+        <form id="paypalTaxForm">
+          <label for="paypalTaxImage" class="form-label">Upload Paypal Payment Screenshot</label>
+          <input class="form-control" type="file" id="paypalTaxImage" name="paypalTaxImage" accept="image/*">
+          <div class="paypalPaymentTaxMessageResponse" id="paypalPaymentTaxMessageResponse"></div>
+          <button type="button" class="btn btn-primary mt-2" onclick="submitTaxPayment('paypal')">Submit Paypal
+            Payment</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Cashapp Payment Method -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="flush-headingCashapp">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+        data-bs-target="#flush-collapseCashapp" aria-expanded="false" aria-controls="flush-collapseCashapp">
+        Cashapp
+      </button>
+    </h2>
+    <div id="flush-collapseCashapp" class="accordion-collapse collapse" aria-labelledby="flush-headingCashapp"
+      data-bs-parent="#accordionFlushExample">
+      <div class="accordion-body">
+        <p><strong>Payment Instructions:</strong> Please upload a screenshot or receipt of your Cashapp payment, showing
+          the amount paid and the transaction details for verification.</p>
+        <p><strong>Cashapp ID:</strong> $johndoe123</p>
+        <form id="cashappTaxForm">
+          <label for="cashappTaxImage" class="form-label">Upload Cashapp Payment Screenshot</label>
+          <input class="form-control" type="file" id="cashappTaxImage" name="cashappTaxImage" accept="image/*">
+          <div class="cashappPaymentTaxMessageResponse" id="cashappPaymentTaxMessageResponse"></div>
+          <button type="button" class="btn btn-primary mt-2" onclick="submitTaxPayment('cashapp')">Submit Cashapp
+            Payment</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>

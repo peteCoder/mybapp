@@ -1,0 +1,358 @@
+{% load static %}
+
+<style>
+    body.no_scroll {
+        overflow-y: hidden !important;
+    }
+
+    /* <img width="30" src="{% static 'images/image.20240613.png' %}" alt=""> */
+
+    .logo__mobile {
+        display: none !important;
+    }
+
+    .logo__desktop {
+        display: block !important;
+    }
+
+
+    .mobile__navigation {
+        width: 50%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 3000000;
+        background-color: white;
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .mobile__menu {
+        display: none !important;
+        width: 100px;
+    }
+
+    .overlay__mobile {
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 3000;
+        background-color: rgba(0, 0, 0, 0.4);
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .mobile__navigation.active {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .overlay__mobile.active {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .mobile__nav__top {
+        padding: 10px;
+        border-bottom: 1px solid gray;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .mobile__nav__top svg {
+        width: 10px !important;
+        cursor: pointer;
+        padding: 5px;
+        border: 1px solid gray;
+        border-radius: 5px;
+    }
+
+    .mobile__menu {
+        padding: 5px;
+        display: block;
+        width: initial;
+    }
+
+    .mobile__menu svg {
+        width: 25px;
+    }
+
+    .mobile__nav__bottom {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+
+    }
+
+    .mobile__nav__bottom a {
+        margin: 10px 0 20px;
+        display: inline-block;
+        color: black;
+        text-decoration: none;
+        text-transform: uppercase;
+        font-weight: 900;
+
+
+    }
+
+    .mobile__nav__bottom a:hover {
+        color: initial;
+    }
+
+
+    @media screen and (max-width: 1025px) {
+        .login {
+            padding: 12px !important;
+        }
+
+        .mobile__menu {
+            display: block !important;
+        }
+
+        .fcb-image__image.fcb-global-nav-header__logo-image {
+            margin-right: 1rem;
+        }
+    }
+
+    @media screen and (max-width: 550px) {
+        .logo__mobile {
+            display: block !important;
+        }
+
+        .logo__desktop {
+            display: none !important;
+        }
+
+        .fcb-image.fcb-global-nav-header__logo {
+            padding-bottom: 0px !important;
+        }
+
+    }
+</style>
+
+<header class="fcb-global-nav-header" data-component="navigation" data-analytics="top navigation">
+
+    <div class="mobile__navigation">
+        <div class="mobile__nav__top">
+            <div class="">
+                <img width="30" src="{% static 'images/image.20240613.png' %}" alt="">
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+
+        </div>
+
+        <div class="mobile__nav__bottom">
+            <a href="{% url 'personal_page' %}">Personal</a>
+            <a href="{% url 'business' %}">Small Business</a>
+            <a href="{% url 'about_page' %}">About us</a>
+            <a href="{% url 'wealth' %}">Wealth</a>
+        </div>
+    </div>
+    <div class="overlay__mobile"></div>
+
+    <div class="fcb-global-nav-header__container">
+        <a href="/">
+
+            <picture class="fcb-image fcb-global-nav-header__logo">
+
+                <img class="logo__mobile" width="30" src="{% static 'images/image.20240613.png' %}" alt="">
+
+                <img class="fcb-image__image fcb-global-nav-header__logo-image logo__desktop"
+                    alt="Link to the First Citizens homepage"
+                    src="https://www.firstcitizens.com/content/dam/firstcitizens/images/logos/fcb-logo-horiz-web-2020@2x.png.transform/image-scaled-2x-to-1x/image.20230612.png">
+            </picture>
+
+        </a>
+        <div class="fcb-global-nav-header__menu-wrapper">
+            <ul class="fcb-global-nav-header__main-nav">
+
+                <li class="fcb-global-nav-header__main-nav-item fcb-global-nav-header__main-nav-item--storefront">
+                    <a href="{% url 'personal_page' %}" style="display: inline-block; text-decoration: none;"
+                        class="fcb-global-nav-header__main-nav-link-wrapper">
+                        <button type="button"
+                            class="fcb-global-nav-header__main-nav-link fcb-global-nav-header__main-nav-link--storefront"
+                            aria-expanded="false" data-analytics="Personal">
+
+                            <span class="fcb-global-nav-header__main-nav-link-text">
+                                Personal
+                            </span>
+                            <svg class="fcb-icon fcb-icon--md fcb-icon--sys-chevron-thick" aria-hidden="true"
+                                focusable="false" data-trackable="true" data-asset-id="sys-chevron-thick">
+
+                                <use xlink:href="images/icons.svg#sys-chevron-thick"></use>
+                            </svg>
+                            <svg class="fcb-icon fcb-icon--inline fcb-icon--sys-triangle" aria-hidden="true"
+                                focusable="false" data-trackable="true" data-asset-id="sys-triangle">
+
+                                <use xlink:href="images/icons.svg#sys-triangle"></use>
+                            </svg>
+                        </button>
+                    </a>
+
+                </li>
+
+
+                <li class="fcb-global-nav-header__main-nav-item fcb-global-nav-header__main-nav-item--storefront">
+                    <a href="{% url 'business' %}" style="display: inline-block; text-decoration: none;"
+                        class="fcb-global-nav-header__main-nav-link-wrapper">
+                        <button type="button"
+                            class="fcb-global-nav-header__main-nav-link fcb-global-nav-header__main-nav-link--storefront"
+                            aria-expanded="false" data-analytics="Small Business">
+
+                            <span class="fcb-global-nav-header__main-nav-link-text">
+                                Small Business
+                            </span>
+                            <svg class="fcb-icon fcb-icon--md fcb-icon--sys-chevron-thick" aria-hidden="true"
+                                focusable="false" data-trackable="true" data-asset-id="sys-chevron-thick">
+
+                                <use xlink:href="images/icons.svg#sys-chevron-thick"></use>
+                            </svg>
+                            <svg class="fcb-icon fcb-icon--inline fcb-icon--sys-triangle" aria-hidden="true"
+                                focusable="false" data-trackable="true" data-asset-id="sys-triangle">
+
+                                <use xlink:href="images/icons.svg#sys-triangle"></use>
+                            </svg>
+                        </button>
+                    </a>
+
+                </li>
+
+
+                <li class="fcb-global-nav-header__main-nav-item fcb-global-nav-header__main-nav-item--storefront">
+                    <a href="{% url 'about_page' %}" style="display: inline-block; text-decoration: none;"
+                        class="fcb-global-nav-header__main-nav-link-wrapper">
+                        <button type="button"
+                            class="fcb-global-nav-header__main-nav-link fcb-global-nav-header__main-nav-link--storefront"
+                            aria-expanded="false" data-analytics="Commercial">
+
+                            <span class="fcb-global-nav-header__main-nav-link-text">
+                                About Us
+                            </span>
+                            <svg class="fcb-icon fcb-icon--md fcb-icon--sys-chevron-thick" aria-hidden="true"
+                                focusable="false" data-trackable="true" data-asset-id="sys-chevron-thick">
+
+                                <use xlink:href="images/icons.svg#sys-chevron-thick"></use>
+                            </svg>
+                            <svg class="fcb-icon fcb-icon--inline fcb-icon--sys-triangle" aria-hidden="true"
+                                focusable="false" data-trackable="true" data-asset-id="sys-triangle">
+
+                                <use xlink:href="images/icons.svg#sys-triangle"></use>
+                            </svg>
+                        </button>
+                    </a>
+
+                </li>
+
+
+                <li class="fcb-global-nav-header__main-nav-item fcb-global-nav-header__main-nav-item--storefront">
+                    <a href="{% url 'wealth' %}" style="display: inline-block; text-decoration: none;"
+                        class="fcb-global-nav-header__main-nav-link-wrapper">
+                        <button type="button"
+                            class="fcb-global-nav-header__main-nav-link fcb-global-nav-header__main-nav-link--storefront"
+                            aria-expanded="false" data-analytics="Wealth">
+
+                            <span class="fcb-global-nav-header__main-nav-link-text">
+                                Wealth
+                            </span>
+                            <svg class="fcb-icon fcb-icon--md fcb-icon--sys-chevron-thick" aria-hidden="true"
+                                focusable="false" data-trackable="true" data-asset-id="sys-chevron-thick">
+
+                                <use xlink:href="images/icons.svg#sys-chevron-thick"></use>
+                            </svg>
+                            <svg class="fcb-icon fcb-icon--inline fcb-icon--sys-triangle" aria-hidden="true"
+                                focusable="false" data-trackable="true" data-asset-id="sys-triangle">
+
+                                <use xlink:href="images/icons.svg#sys-triangle"></use>
+                            </svg>
+                        </button>
+                    </a>
+
+                </li>
+            </ul>
+            <ul class="fcb-global-nav-header__utility-links">
+
+            </ul>
+        </div>
+
+        {% if not user.is_authenticated %}
+        <button class="fcb-global-nav-header__cta-button fcb-modal__trigger login" type="button"
+            aria-controls="fcb-modal--login-master">
+
+            <span class="sr-only">
+
+                Log into our online services
+            </span>
+            <span aria-hidden="true">
+                Log In
+            </span>
+
+        </button>
+        {% else %}
+        <a class="fcb-global-nav-header__cta-button fcb-modal__trigger login dashboard__style"
+            href="{% url 'dashboard_home' %}">
+
+            <span class="sr-only">
+
+                Go to Dashboard
+            </span>
+            <span aria-hidden="true">
+                Go
+            </span>
+
+        </a>
+
+        {% endif %}
+
+        <div class="mobile__menu fcb-global-nav-header__cta-button fcb-modal__trigger dashboard__style">
+
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+
+        </div>
+
+
+
+    </div>
+
+</header>
+
+
+
+<script>
+    const mobileUltimateMenu = document.querySelector(".mobile__menu");
+    const mobileNavigation = document.querySelector(".mobile__navigation");
+    const cancelMobileNavigation = document.querySelector(".mobile__nav__top svg");
+    const mobileOverlay = document.querySelector(".overlay__mobile");
+
+    mobileUltimateMenu.onclick = function () {
+        mobileNavigation.classList.add("active");
+        mobileOverlay.classList.add("active");
+        document.body.classList.add("no_scroll");
+    }
+
+    cancelMobileNavigation.onclick = function () {
+        mobileNavigation.classList.remove("active");
+        mobileOverlay.classList.remove("active");
+        document.body.classList.remove("no_scroll");
+    }
+    mobileOverlay.onclick = function () {
+        mobileNavigation.classList.remove("active");
+        mobileOverlay.classList.remove("active");
+        document.body.classList.remove("no_scroll");
+    }
+
+
+
+
+</script>

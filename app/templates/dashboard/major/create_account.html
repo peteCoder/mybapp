@@ -1,0 +1,555 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+
+{% block style %}
+<style>
+    .modal-content {
+        background: #f8f9fa;
+        /* Light gray background */
+        border-radius: 1rem;
+    }
+
+    .modal-header {
+        border-bottom: none;
+        padding: 1.5rem;
+    }
+
+    .modal-body img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .modal-body {
+        color: #495057;
+    }
+
+    .modal-footer {
+        border-top: none;
+    }
+
+    .modal-footer .btn {
+        padding: 0.5rem 2rem;
+        border-radius: 0.5rem;
+        font-weight: bold;
+    }
+
+    .asterisks {
+        color: red;
+    }
+
+    .loading-spinner {
+        display: none;
+    }
+
+    @media screen and (max-width: 800px) {
+        .first__logo img {
+            width: 200px;
+        }
+    }
+</style>
+
+
+
+{% endblock %}
+
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3">Account Application</h1>
+
+        <form id="createAccountForm" method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="account_type" class="form-label">Account Type<span class="asterisks">*</span></label>
+                <select style="height: 40px;" id="account_type" name="account_type" class="form-control" required>
+                    <option value="">Select an account type</option>
+                    {% for key, value in account_types_to_create %}
+                    {% if key not in existing_account_types %}
+                    <option value="{{ key }}">{{ value }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                <!-- Icon -->
+                <div class="" data-bs-toggle="tooltip" title="Click to view account details"
+                    style="display: inline-block;" class="d-inline-block">
+                    <div class="btn btn-link p-0 d-flex align-items-center gap-1" id="dynamicPopupTrigger"
+                        data-bs-toggle="modal" data-bs-target="#dynamicModal"
+                        style="font-size: 1.5rem; text-decoration: none;" aria-label="About Account">
+                        <i class="bi bi-question-circle-fill text-primary"></i>
+                        <span style="font-size: 14px; text-decoration: underline;">Learn more about
+                            account.</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="staticFields">
+                <h4 class="mt-3">Personal Details</h4>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <label for="first_name" class="form-label">First Name <span class="asterisks">*</span></label>
+                        <input type="text" value="{{user.first_name}}" class="form-control" id="first_name"
+                            name="first_name" disabled required>
+                    </div>
+                    <div class="col-sm-6 mb-3 ">
+                        <label for="last_name" class="form-label">Last Name <span class="asterisks">*</span></label>
+                        <input type="text" value="{{user.last_name}}" class="form-control" id="last_name"
+                            name="last_name" disabled required>
+                    </div>
+                </div>
+                <h4 class="mt-3">Recent Address Details</h4>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <label for="address" class="form-label">Address <span class="asterisks">*</span></label>
+                        <input type="text" value="{{user.address}}" class="form-control" id="address" name="address"
+                            required>
+                    </div>
+                    <div class="col-sm-6 mb-3 ">
+                        <label for="utility_bill" class="form-label">Utility Bill <span
+                                class="asterisks">*</span></label>
+                        <input type="file" id="utility_bill" name="utility_bill" class="form-control" required>
+                        <p style="font-size: 12px; margin-top: 5px;">Please upload a recent copy of your utility bill.
+                        </p>
+                    </div>
+                </div>
+                <!-- Employment Information -->
+                <h4 class="mt-3">Recent Employment Details</h4>
+
+                <p class="p">To facilitate the approval of your account, we kindly recommend uploading your most recent
+                    employment information. </p>
+
+                <div class="row">
+                    <div class="mb-3 col-sm-6">
+                        <label for="employment_status" class="form-label">Employment Status <span
+                                class="asterisks">*</span></label>
+                        <select id="employment_status" required name="employment_status" class="form-select" required
+                            aria-label="Default select example">
+                            {% for employment_status in employment_statuses %}
+                            <option style="text-transform: capitalize;" value="{{employment_status}}">
+                                {{employment_status}}</option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                    <div class="mb-3 col-sm-6">
+                        <label for="employment_type" class="form-label">Employment Type<span class="asterisks">*</span>
+                        </label>
+                        <select id="employment_type" name="employment_type" class="form-select" required
+                            aria-label="Default select example" required>
+                            {% for employment_type in employment_types %}
+                            <option style="text-transform: capitalize;" value="{{employment_type}}">
+                                {{employment_type}}</option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-sm-6">
+                        <label for="employer_name" class="form-label">Business/Employer Name<span
+                                class="asterisks">*</span></label>
+                        <input type="text" id="employer_name" name="employer_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3 col-sm-6">
+                        <label for="employer_phone" class="form-label">Business/Employer
+                            Phone<span class="asterisks">*</span></label>
+                        <input type="text" id="employer_phone" name="employer_phone" class="form-control" required>
+                    </div>
+                </div>
+
+
+
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="job_start_date" class="form-label">Start Date<span
+                                class="asterisks">*</span></label>
+                        <input type="date" class="form-control" id="job_start_date" name="job_start_date" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="job_end_date" class="form-label">End Date<span class="asterisks">*</span></label>
+                        <input type="date" class="form-control" id="job_end_date" name="job_end_date" required>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="annual_income" class="form-label">Annual Income <span class="asterisks">*</span>
+                        </label>
+                        <div class="input-group ">
+                            <div class="input-group-prepend">
+                                <span style="border-radius: 0px !important;" class="input-group-text">$</span>
+                            </div>
+                            <input type="number" class="form-control" id="annual_income" name="annual_income"
+                                aria-label="Amount (to the nearest dollar)" required>
+                            <div class="input-group-append">
+                                <span style="border-radius: 0px !important;" class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                        <p style="font-size: 12px; margin-top: 5px;">Enter an estimate of your annual income.
+                        </p>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="credit_score" class="form-label">Credit Score <span class="asterisks">*</span>
+                        </label>
+                        <input type="number" class="form-control" id="credit_score" name="credit_score"
+                            aria-label="Credit Score" required>
+
+                        <p style="font-size: 12px; margin-top: 5px;">Enter your current credit score.
+                        </p>
+
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="file__upload">
+                            <label for="proof_of_employment" class="form-label">Proof of
+                                Employment <span class="asterisks">*</span></label>
+                            <input type="file" id="proof_of_employment" name="proof_of_employment" class="form-control"
+                                required>
+                        </div>
+                        <span style="font-size: 12px; margin-top: 5px;">Pay stubs, employment letters, or
+                            contracts.</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="file__upload">
+                            <label for="proof_of_income" class="form-label">Proof of Income<span
+                                    class="asterisks">*</span></label>
+                            <input type="file" id="proof_of_income" name="proof_of_income" class="form-control"
+                                required>
+                        </div>
+                        <span style="font-size: 12px; margin-top: 5px;">Tax returns, bank statements, or financial
+                            documents.</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="file__upload">
+                            <label for="business_address" class="form-label">Business Address 1<span
+                                    class="asterisks">*</span></label>
+                            <input type="text" id="business_address" name="business_address" class="form-control"
+                                required>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="file__upload">
+                            <label for="business_address2" class="form-label">Business Address 2</label>
+                            <input type="text" id="business_address2" name="business_address2" class="form-control"
+                                required>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+
+            <div id="dynamicFields">
+                <!-- For Checking -->
+
+            </div>
+
+
+            <button type="submit" class="btn btn-primary">Create Account</button>
+        </form>
+
+        {% if existing_account_types %}
+        <h5 class="mt-5">Your Existing Accounts:</h5>
+        <ul>
+            {% for account_type in existing_account_types %}
+            <li>{{ account_type }}</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <h5 class="mt-5" style="color: rgb(163, 163, 163);">You have no existing account.</h5>
+        {% endif %}
+    </div>
+
+
+
+    <!-- Dynamic modal -->
+    <div class="modal fade" id="dynamicModal" tabindex="-1" aria-labelledby="dynamicModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg rounded-4 border-0">
+                <div class="modal-header bg-primary text-white">
+                    <!-- <h5 class="modal-title fw-bold text-white h2" id="dynamicModalLabel">Account</h5> -->
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-left">
+
+                    <p id="modalContent" class="fs-5 text-muted">
+                        Select an account to view details.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalMessageBody">
+                    <!-- The message from the backend will be injected here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</main>
+{% endblock %}
+
+{% block script %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+
+<script>
+
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
+    document.getElementById('dynamicPopupTrigger').addEventListener('click', function () {
+        const selectedType = document.getElementById('account_type').value;
+        const modalContent = document.getElementById('modalContent');
+
+        if (!selectedType) {
+            modalContent.innerHTML = "<span class='text-danger'>⚠️ Please select an account type first.</span>";
+            return;
+        }
+
+        fetch("{% url 'get_all_account_data' %}")
+            .then(response => {
+                if (!response.ok) throw new Error("Failed to fetch data");
+                return response.json();
+            })
+            .then(data => {
+                const account = data.data.find(acc => acc.account_type === selectedType);
+                if (account) {
+                    modalContent.innerHTML = `
+                    <h6 class="fw-bold text-primary h3">${account.account_type} ACCOUNT</h6>
+                    <p>${account.details || 'No specific details available.'}</p>
+                    <p class="fw-bold h2">
+                        💰 Deposit Amount: <span class="h2">$${account.amount_to_deposit || 'N/A'}</span>
+                    </p>
+                    <p class="text-muted">
+                    ${account.furthermore}
+                        
+                    </p>
+                `;
+                } else {
+                    modalContent.innerHTML = "<span class='text-danger'>⚠️ Account details not found.</span>";
+                }
+            })
+            .catch(error => {
+                modalContent.innerHTML = `<span class='text-danger'>⚠️ Error fetching account data: ${error.message}</span>`;
+            });
+    });
+
+
+
+
+    document.getElementById('account_type').addEventListener('change', function () {
+        const dynamicFields = document.getElementById('dynamicFields');
+        const dynamicPopupTrigger = document.getElementById('dynamicPopupTrigger');
+        const selectedType = this.value;
+
+
+
+        dynamicFields.innerHTML = '';
+
+        console.log(selectedType)
+
+        if (selectedType === 'SAVINGS') {
+            dynamicFields.innerHTML = `
+            `;
+        } else if (selectedType === 'MONEY MARKET') {
+            dynamicFields.innerHTML = `
+                
+            `;
+        } else if (selectedType === 'PLATINUM') {
+
+            dynamicFields.innerHTML = `
+                
+            `;
+        }
+        else if (selectedType === 'CHECKING') {
+            dynamicFields.innerHTML = `
+        
+        <!-- Joint Account Holder Details -->
+        <h4 class="mt-3">Joint Account Holder Details</h4>
+        <div class="alert alert-info">
+            Please provide details for the joint account holder. Leave blank if not applicable.
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="joint_account_holder_first_name" class="form-label">First Name</label>
+                <input type="text" id="joint_account_holder_first_name" name="joint_account_holder_first_name" class="form-control">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="joint_account_holder_last_name" class="form-label">Last Name</label>
+                <input type="text" id="joint_account_holder_last_name" name="joint_account_holder_last_name" class="form-control">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="joint_date_of_birth" class="form-label">Date of Birth</label>
+                <input type="date" id="joint_date_of_birth" name="joint_date_of_birth" class="form-control">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="joint_account_holder_ssn" class="form-label">Social Security Number (SSN)</label>
+                <input type="text" id="joint_account_holder_ssn" name="joint_account_holder_ssn" class="form-control">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="joint_account_holder_phone" class="form-label">Phone Number</label>
+            <input type="text" id="joint_account_holder_phone" name="joint_account_holder_phone" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="joint_account_holder_email" class="form-label">Email Address</label>
+            <input type="email" id="joint_account_holder_email" name="joint_account_holder_email" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="joint_account_holder_address" class="form-label">Address</label>
+            <textarea id="joint_account_holder_address" name="joint_account_holder_address" class="form-control" rows="3"></textarea>
+        </div>
+
+
+
+        <!-- Proof of Identification -->
+        <h4 class="mt-3">Proof of Identification For Joint Account Holder</h4>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="joint_account_holder_government_id_type" class="form-label">Government ID Type </label>
+                <select id="joint_account_holder_government_id_type" name="joint_account_holder_government_id_type"
+                    class="form-select" required aria-label="Default select example">
+                    {% for id_type in all_id_types %}
+                    <option style="text-transform: capitalize;" value="{{id_type}}">{{id_type}}
+                    </option>
+                    {% endfor %}
+
+                </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="joint_account_holder_government_id_number" class="form-label">Government ID Number</label>
+                <input type="text" id="joint_account_holder_government_id_number" name="joint_account_holder_government_id_number" class="form-control"
+                    >
+            </div>
+            
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-sm-6">
+                <label for="joint_account_holder_front_id_image" class="form-label mt-3">Front ID Image </label>
+                <input type="file" class="form-control" id="joint_account_holder_front_id_image" name="joint_account_holder_front_id_image"
+                    accept="image/*" >
+            </div>
+
+            <div class="col-sm-6">
+                <label for="joint_account_holder_back_id_image" class="form-label mt-3">Back ID Image </label>
+                <input type="file" class="form-control" id="joint_account_holder_back_id_image" name="joint_account_holder_back_id_image"
+                    accept="image/*" >
+            </div>
+        </div>
+    `;
+        }
+
+
+    });
+</script>
+
+
+
+<script>
+
+    function setLoadingState(button, isLoading) {
+        if (isLoading) {
+            // Disable the button and show spinner
+            button.disabled = true;
+            button.innerHTML += `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+        } else {
+            // Enable the button and remove spinner
+            button.disabled = false;
+            const spinner = button.querySelector('.spinner-border');
+            if (spinner) {
+                spinner.remove();
+            }
+        }
+    }
+
+    // const formData = new FormData();
+    // formData.append("confirmation_receipt", imageInput.files[0]);
+    // formData.append("payment_method", paymentMethod);
+
+    document.getElementById('createAccountForm').addEventListener('submit', function (e) {
+
+        e.preventDefault();
+
+
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        setLoadingState(submitButton, true);
+
+        const formData = new FormData(this);
+
+        localStorage.setItem('AccountCreationDetails', JSON.stringify(Object.fromEntries(formData)));
+
+        fetch("{% url 'create_account_view_api' %}", {
+            method: "POST",
+            body: formData,
+
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                setLoadingState(submitButton, false);
+                if (data.account_id) {
+
+                    modalMessageBody.textContent = data.message;
+                    modalMessageBody.classList.remove('text-danger');
+                    modalMessageBody.classList.add('text-success');
+                    // Show the modal
+                    new bootstrap.Modal(document.getElementById('messageModal')).show();
+
+                    setTimeout(() => {
+                        window.location.href = `/dashboard/accounts/${data.account_id}`;
+                    }, 3000)
+
+                } else {
+                    modalMessageBody.textContent = data.message;
+                    modalMessageBody.classList.remove('text-success');
+                    modalMessageBody.classList.add('text-danger');
+                    // Show the modal
+                    new bootstrap.Modal(document.getElementById('messageModal')).show();
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            })
+
+
+    });
+</script>
+{% endblock %}

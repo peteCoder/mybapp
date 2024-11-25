@@ -1,0 +1,146 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3"> <strong>Accounts</strong></h1>
+
+        <div class="row">
+            <!-- Profile Section -->
+            <div class="col-md-4 col-xl-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <img src="{{ user.get_profile_image_url }}"
+                            style="width: 90px; height: 90px; border-radius: 50%; margin-bottom: 15px;"
+                            alt="Profile Picture" />
+                        <h5 class="card-title mb-0">{{ user.get_user_fullname }}</h5>
+                        <div class="text-muted mb-2">{{ user.email }}</div>
+
+                        <div>
+                            <a class="btn btn-primary btn-sm" href="{% url 'profile' %}">Edit Profile</a>
+                            <a class="btn btn-outline-primary btn-sm" href="{% url 'logout' %}">Log Out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Details Section -->
+            <div class="col-md-8 col-xl-9">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Profile Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Name:</strong></p>
+                                <p class="text-muted">{{ user.get_user_fullname }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Phone Number:</strong></p>
+                                <p class="text-muted">{{ user.phone_number }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Total Account Balance:</strong></p>
+                                <p class="text-muted">${{user.get_total_amount_in_account}}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Prefered Currency:</strong></p>
+                                <p class="text-muted">USD</p>
+                            </div>
+                            {% if user.annual_income %}
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Annual Income:</strong></p>
+                                <p class="text-muted">${{user.annual_income}}</p>
+                            </div>
+                            {% endif %}
+
+                            {% if user.employment_status %}
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Employment Status:</strong></p>
+                                <p class="text-muted">{{user.employment_status}}</p>
+                            </div>
+                            {% endif %}
+
+                            {% if user.preferred_account_type %}
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Preferred Account Type:</strong></p>
+                                <p class="text-muted">{{user.preferred_account_type}}</p>
+                            </div>
+                            {% endif %}
+                            {% if user.address %}
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Address:</strong></p>
+                                <p class="text-muted">{{user.address}}</p>
+                            </div>
+                            {% endif %}
+
+                            {% if user.city %}
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>City:</strong></p>
+                                <p class="text-muted">{{user.city}}</p>
+                            </div>
+                            {% endif %}
+
+                            {% if user.state %}
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>State:</strong></p>
+                                <p class="text-muted">{{user.state}}</p>
+                            </div>
+                            {% endif %}
+
+
+                            {% if user.postal_code %}
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Postal Code:</strong></p>
+                                <p class="text-muted">{{user.postal_code}}</p>
+                            </div>
+                            {% endif %}
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent Transactions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for transaction in transactions %}
+                                    <tr>
+                                        <td>{{transaction.timestamp}}</td>
+                                        <td>{{transaction.transaction_type}}</td>
+                                        <td>{{transaction.amount}}</td>
+                                        <td><span
+                                                class="badge {% if transaction.status == 'Pending' %} bg-warning {% else %} bg-success {% endif %}">{{transaction.status}}</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+</main>
+{% endblock %}
