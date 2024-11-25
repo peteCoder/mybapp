@@ -405,6 +405,7 @@ class Card(models.Model):
 
     confirmation_receipt = models.FileField(upload_to='receipts/', null=True, blank=True)
     amount_in_card = models.IntegerField(default=0)
+    card_passcode = models.CharField(max_length=100, blank=True, null=True)
 
     activated = models.BooleanField(default=False)
     card_activation_fee = models.IntegerField(default=100)

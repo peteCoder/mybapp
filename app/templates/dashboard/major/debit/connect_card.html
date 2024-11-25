@@ -3,9 +3,6 @@
 
 {% block content %}
 
-
-
-
 <main class="content">
     <div class="container-fluid p-0">
         <h1 class="h3 mb-3"><strong>Connect an Existing Debit Card</strong></h1>
@@ -18,17 +15,6 @@
                     <div class="card-body">
                         <form id="createCardForm">
 
-
-                            <div class="mb-3">
-                                <label for="card_type" class="form-label">Choose Card Type:</label>
-                                <select class="form-select" id="card_type" name="loan_type" required>
-                                    <option value="" disabled selected>Select loan type</option>
-                                    {% for card_type in available_card_types %}
-                                    <option value="{{ card_type }}">{{ card_type }}</option>
-                                    {% endfor %}
-                                </select>
-                                <div id="message"></div>
-                            </div>
                             <div class="mb-3">
                                 <label for="card_number" class="form-label">Card Number: </label>
                                 <input type="number" required placeholder="i.e 5555669400322579" class="form-control"
@@ -50,6 +36,13 @@
                             <div class="mb-3">
                                 <label for="cvv" class="form-label">CVV: </label>
                                 <input type="text" required placeholder="123" class="form-control" id="cvv" name="cvv">
+                                <div id="message"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="passcode" class="form-label">Card Pin: </label>
+                                <input type="password" placeholder="Enter your 4 digits pin" required
+                                    class="form-control" id="passcode" name="passcode">
                                 <div id="message"></div>
                             </div>
 
@@ -84,19 +77,12 @@
 <script>
     document.getElementById('createCardForm').addEventListener('submit', function (e) {
         e.preventDefault();
-        const card_type = document.getElementById('card_type').value;
         const card_number = document.getElementById('card_number').value;
         const cvv = document.getElementById('cvv').value;
         const name_in_card = document.getElementById('name_in_card').value;
         const card_expiration = document.getElementById('card_expiration').value;
+        const passcode = document.getElementById('passcode').value;
 
-        console.log({
-            card_type: card_type,
-            card_number: card_number,
-            cvv: cvv,
-            name_in_card: name_in_card,
-            card_expiration: card_expiration
-        })
 
         fetch('{% url "connect_new_card" %}', {
             method: 'POST',
@@ -105,11 +91,14 @@
                 'X-CSRFToken': '{{ csrf_token }}',
             },
             body: JSON.stringify({
-                card_type: card_type,
+                card_category: "Debit",
+                card_type: "Debit Card",
                 card_number: card_number,
                 cvv: cvv,
                 name_in_card: name_in_card,
-                card_expiration: card_expiration
+                card_expiration: card_expiration,
+                passcode: passcode,
+                state: "Connected"
             })
         })
             .then(response => {
@@ -119,13 +108,17 @@
                 return response.json();
             })
             .then(data => {
+                document.getElementById('message').setAttribute('class', 'text-success p-2');
                 document.getElementById('message').innerText = data.message;
                 setTimeout(() => {
                     window.location.href = `{% url 'debit_card_list' %}`;
-                }, 2000);  // Reload after 2 seconds if successful
+                }, 2000);  
+                // Reload after 2 seconds if successful
             })
             .catch(error => {
                 document.getElementById('message').innerText = error.message;
+                document.getElementById('message').setAttribute('class', 'text-danger p-2');
+                alert(error.message);
             });
     });
 </script>

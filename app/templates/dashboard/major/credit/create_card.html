@@ -3,9 +3,6 @@
 
 {% block content %}
 
-
-
-
 <main class="content">
     <div class="container-fluid p-0">
         <h1 class="h3 mb-3"><strong>Create a New Credit Card</strong></h1>
@@ -14,7 +11,6 @@
             <div class="col-lg-8">
                 <div class="card">
 
-                    <div id="message" class="p-2"></div>
                     <div class="card-body">
                         <form id="createCardForm">
 
@@ -26,7 +22,6 @@
                                     <option value="{{ account.id }}">{{ account.account_type }}</option>
                                     {% endfor %}
                                 </select>
-                                <div id="message"></div>
                             </div>
 
 
@@ -39,9 +34,22 @@
                                     <option value="{{ card_type }}">{{ card_type }}</option>
                                     {% endfor %}
                                 </select>
-                                <div id="message"></div>
                             </div>
 
+                            <div class="mb-3">
+                                <label for="passcode" class="form-label">Personal Identification Number (PIN): </label>
+                                <input required min="4" max="4" type="password" class="form-control" id="passcode"
+                                    name="passcode">
+                                <span style="font-size: 12px;">Please enter a four digit pin</span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="passcode2" class="form-label">Confirm Personal Identification Number (PIN):
+                                </label>
+                                <input required min="4" max="4" type="password" class="form-control" id="passcode2"
+                                    name="passcode2">
+                                <span style="font-size: 12px;">Please Confirm your chosen four digit pin</span>
+                            </div>
+                            <div id="message" class="p-2"></div>
 
                             <button type="submit" class="btn btn-primary">Create Card</button>
                         </form>
@@ -72,10 +80,21 @@
 
 {% block script %}
 <script>
+    const clearAllFields = function () {
+        document.getElementById('message').setAttribute('class', '');
+        document.getElementById('message').innerText = "";
+        document.getElementById('card_type').value = "";
+        document.getElementById('account_type').value = "";
+        document.getElementById('passcode').value = "";
+        document.getElementById('passcode2').value = "";
+    }
+
     document.getElementById('createCardForm').addEventListener('submit', function (e) {
         e.preventDefault();
         const cardType = document.getElementById('card_type').value;
         const accountType = document.getElementById('account_type').value;
+        const passcode = document.getElementById('passcode').value;
+        const passcode2 = document.getElementById('passcode2').value;
 
         fetch('{% url "create_credit_card" %}', {
             method: 'POST',
@@ -84,7 +103,7 @@
                 'X-CSRFToken': '{{ csrf_token }}',
             },
             // body: `card_type=${cardType}`,
-            body: JSON.stringify({ card_type: cardType, account_type: accountType }),
+            body: JSON.stringify({ card_type: cardType, account_type: accountType, passcode, passcode2 }),
         })
             .then(response => {
                 if (!response.ok) {
@@ -93,13 +112,24 @@
                 return response.json();
             })
             .then(data => {
+                document.getElementById('message').setAttribute('class', 'text-success p-2');
                 document.getElementById('message').innerText = data.message;
+                alert(data.message);
                 setTimeout(() => {
-                    window.location.href = `{% url 'credit_card_list' %}`;
+                    // window.location.href = `{% url 'credit_card_list' %}`;
+                    clearAllFields();
+                    window.location.href = `/dashboard/cards/credit/${data.card_id}/`;
                 }, 2000);  // Reload after 2 seconds if successful
             })
             .catch(error => {
+                document.getElementById('message').setAttribute('class', 'text-danger mb-2');
                 document.getElementById('message').innerText = error.message;
+                alert(error.message);
+
+                setTimeout(() => {
+                    clearAllFields();
+                }, 1000)
+
             });
     });
 </script>

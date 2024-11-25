@@ -366,24 +366,36 @@ def connect_new_card(request):
     
         data = request.data
         
+        card_category = data.get('card_category')
         card_type = data.get('card_type')
         card_number = data.get('card_number')
         cvv = data.get('cvv')
         name_in_card = data.get('name_in_card')
         card_expiration = data.get('card_expiration')
+        state = data.get('state')
+        passcode = data.get('passcode')
 
-        print("DATA: ",card_type, card_number, cvv, name_in_card, card_expiration)
+        print("DATA: ",card_category, card_type, card_number, cvv, name_in_card, card_expiration)
 
         # Check if the user already has a card of this type
-        if Card.objects.filter(user=request.user, card_type=card_type).exists():
-            return Response({'error': f'You already have a {card_type} card.'}, status=status.HTTP_400_BAD_REQUEST)
+        # if Card.objects.filter(user=request.user, card_category=card_category).exists():
+        #     return Response({'error': f'You already have a {card_category} card.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # If the user doesn't have this card type, create a new one
+
+        if not len(passcode) == 4:
+            return Response({'error': 'Please enter your 4 digit card pin.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not len(cvv) == 3:
+            return Response({'error': 'CVV is the 3 digit pin at the back of your Card'}, status=status.HTTP_400_BAD_REQUEST)
+        
         card = Card.objects.create(
             user=request.user,
             card_type=card_type,
+            card_category=card_category,
             card_number=card_number,
             cvv=cvv,
+            state=state,
             name_in_card=name_in_card,
             card_expiration=card_expiration,
             is_real_card = True,

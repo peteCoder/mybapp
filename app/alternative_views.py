@@ -74,35 +74,51 @@ def create_credit_card(request):
             data = json.loads(request.body)  # Parse JSON body
             card_type = data.get('card_type')
             account_type = data.get('account_type')
+            passcode = data.get('passcode')
+            passcode2 = data.get('passcode2')
         except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON data.'}, status=400)
+            return JsonResponse({'error': 'Invalid JSON data.', 'pass': True}, status=400)
         
         print("Account Type: ", account_type)
         print("Card Type: ", card_type)
+        print("Passcode: ", passcode)
+        print("Passcode: ", passcode2)
+
+        if passcode != passcode2:
+            return JsonResponse({'error': 'Card Pin must be a match', 'pass': False}, status=400)
+        
+        if not len(passcode) == 4:
+            return JsonResponse({'error': 'Please enter a four digit Card Pin', 'pass': False}, status=400)
 
         try:
             main_account = Account.objects.get(id=account_type)
         except Account.DoesNotExist:
-            return JsonResponse({'error': f'Account does not exist.'}, status=400)
+            return JsonResponse({'error': f'Account does not exist.', 'pass': True}, status=400)
 
 
         # Check if the user already has a card of this type
         if Card.objects.filter(user=request.user, card_type=card_type).exists():
-            return JsonResponse({'error': f'You already have a {card_type} card.'}, status=400)
+            return JsonResponse({'error': f'You already have a {card_type} card.', 'pass': True}, status=400)
 
         # If the user doesn't have this card type, create a new one
         card = Card(user=request.user, card_type=card_type, card_category="Credit")
         card.account = main_account
+        card.card_passcode = passcode
         card.generate_card_number()
         card.generate_cvv()
         card.generate_expiration_date()
         card.generate_fee_for_card()
         card.save()
 
-        return JsonResponse({'message': 'Card created successfully!', 'card_id': card.id})
+        return JsonResponse({'message': 'Card created successfully!', 'card_id': card.id, 'pass': True})
     
 
-    return render(request, 'dashboard/major/credit/create_card.html', {'accounts': accounts, 'available_card_types': available_card_types, "notifications": notifications, "notification_count": notifications.count(),})
+    return render(request, 'dashboard/major/credit/create_card.html', {
+        'accounts': accounts, 
+        'available_card_types': available_card_types, 
+        "notifications": notifications, 
+        "notification_count": notifications.count(),
+    })
 
 
 @login_required
@@ -127,7 +143,9 @@ def connect_credit_card(request):
         #     return JsonResponse({'error': f'You already have a {card_type} card.'}, status=400)
 
         # If the user doesn't have this card type, create a new one
-        card = Card(user=request.user, card_type='Credit Card')
+        card = Card(user=request.user)
+        card.card_category = card_type
+        card.state = "Connected"
         card.card_number=card_number
         card.cvv = cvv
         card.name_in_card=name_in_card 
@@ -138,7 +156,7 @@ def connect_credit_card(request):
         return JsonResponse({'message': 'Card created successfully!', 'card_id': card.id})
     
 
-    return render(request, 'dashboard/major/credit/connect_card.html', {'available_card_types': available_card_types, "notifications": notifications, "notification_count": notifications.count(),})
+    return render(request, 'dashboard/major/credit/connect_card.html', {'available_card_types': available_card_types, "available_card_count": len(available_card_types), "notifications": notifications, "notification_count": notifications.count(),})
 
 
 
