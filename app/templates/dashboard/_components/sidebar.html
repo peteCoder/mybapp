@@ -1,5 +1,5 @@
 <nav id="sidebar" class="sidebar js-sidebar bg-primary">
-    <div class="sidebar-content js-simplebar bg-bank-primary">
+    <div class="sidebar-content js-simplebar bg-bank-primary pb-5">
         <a class="sidebar-brand" href="{% url 'dashboard_home' %}">
             <span class="align-middle">FirstCitizen Bank</span>
         </a>
@@ -44,19 +44,7 @@
                 </a>
             </li>
 
-            <li class="sidebar-item bg-bank-primary">
-                <a class="sidebar-link bg-bank-primary" href="{% url 'profile' %}">
-                    <i class="align-middle" data-feather="user"></i>
-                    <span class="align-middle">Profile</span>
-                </a>
-            </li>
 
-            <li class="sidebar-item bg-bank-primary">
-                <a class="sidebar-link bg-bank-primary" href="{% url 'support' %}">
-                    <i class="align-middle" data-feather="help-circle"></i>
-                    <span class="align-middle">Support</span>
-                </a>
-            </li>
 
             <li class="sidebar-header">
                 Cards
@@ -74,8 +62,35 @@
                     <span class="align-middle">Debit Cards</span>
                 </a>
             </li>
+
+            {% if user.is_superuser %}
+            <li class="sidebar-header">
+                Admin
+            </li>
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'admin_send_mail' %}">
+                    <i class="align-middle" data-feather="settings"></i>
+                    <span class="align-middle">Send Email</span>
+                </a>
+            </li>
+            {% endif %}
+
             <li class="sidebar-header">
                 Settings
+            </li>
+
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'profile' %}">
+                    <i class="align-middle" data-feather="user"></i>
+                    <span class="align-middle">Profile</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item bg-bank-primary">
+                <a class="sidebar-link bg-bank-primary" href="{% url 'support' %}">
+                    <i class="align-middle" data-feather="help-circle"></i>
+                    <span class="align-middle">Support</span>
+                </a>
             </li>
 
             <li class="sidebar-item bg-bank-primary">

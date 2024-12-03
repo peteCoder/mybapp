@@ -178,6 +178,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
+                
             </div>
         </div>
     </div>
@@ -290,9 +291,16 @@
         submitButton.disabled = true;
         submitButton.innerText = "Sending...";
 
+        const amountToFundAcct = JSON.parse(localStorage.getItem("fundDetails"))?.amount;
+
+        // console.log(amountToFundAcct);
+
+        // console.log("Amount to fund", amountToFundAcct)
+
         const formData = new FormData();
         formData.append("confirmation_receipt", imageInput.files[0]);
         formData.append("payment_method", paymentMethod);
+        formData.append("amount", amountToFundAcct);
 
         const url = "{% url 'send_payment_transfer_confirmation_from_user' %}"; // Payment-specific URL
 

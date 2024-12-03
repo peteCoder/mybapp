@@ -55,7 +55,8 @@
 
                     <div class="card-body">
 
-                        <div class="mb-3">Below is the current amount in card. Fund your {{card.card_type}} by clicking
+                        <div class="mb-3">Below is the current amount in card. Fund your {{card.card_type}} card by
+                            clicking
                             on the
                             button below: </div>
 
@@ -92,12 +93,13 @@
 
                     <div class="card-body">
                         {% if not card.activated %}
-                        <div class="mb-3">In order to activate your card, please pay the activation fee:</div>
 
-                        <div class="display-5 mb-3">${{ card.card_activation_fee }}</div>
 
                         <!-- Account details with copy button -->
                         {% if not card.applied_for_activation %}
+                        <div class="mb-3">In order to activate your card, please pay the activation fee:</div>
+
+                        <div class="display-5 mb-3">${{ card.card_activation_fee }}</div>
 
                         <div class="">
                             <!-- Here are the bank Details -->
@@ -116,8 +118,13 @@
                             <button type="submit" class="btn btn-primary">Submit Payment Confirmation</button>
                         </form>
                         {% else %}
-                        <div>Your application is being processed. Please await activation.</div>
-                        <div class="badge bg-warning">Pending</div>
+                        <div>
+                            Your card application is being processed.
+                            We are reviewing your snapshots and documents.
+                            Please await activation.
+                        </div>
+                        <span>Current Status: </span>
+                        <span class="badge bg-warning">Pending</span>
                         {% endif %}
                         {% endif %}
                     </div>

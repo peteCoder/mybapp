@@ -421,26 +421,46 @@ def create_loan(request):
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
-    if request.method == 'POST':
+    user_all_accounts = Account.objects.filter(customer=request.user)
 
-        # loan amount: 2000
-        # loan term: 1
-        # loan type: personal
+
+
+    if request.method == 'POST':
+        account_id = request.POST['account_id']
         
         loan_type = request.POST['loan_type']
         loan_amount = request.POST['loan_amount']
         loan_term = request.POST['loan_term']
+
+
+        # Get the the account instance
+        try:
+            current_account = Account.objects.get(id=account_id)
+        except Account.DoesNotExist:
+            pass
         # Create loan with appropriate data
-        print("LOAN_TYPE: ", loan_type, "\nLOAN_AMOUNT: ", loan_amount, "\nLOAN_TERM: ", loan_term)
+        print(
+            "LOAN_TYPE: ", loan_type, 
+            "\nLOAN_AMOUNT: ", loan_amount, 
+            "\nLOAN_TERM: ", loan_term, 
+            "\nACCOUNT_ID: ", account_id
+        )
+
         loan = Loan.objects.create(
             customer=request.user,
             loan_type=loan_type,
             amount=loan_amount,
-            loan_term=loan_term
+            loan_term=loan_term,
+            account=current_account
         )
+
         return redirect('loan_detail', pk=loan.id)
 
-    return render(request, "dashboard/major/loan_create.html", {"notifications": notifications, "notification_count": notifications.count(),})
+    return render(request, "dashboard/major/loan_create.html", {
+        "user_accounts": user_all_accounts, 
+        "notifications": notifications, 
+        "notification_count": notifications.count(),
+    })
 
 @login_required
 def loans(request):
@@ -513,28 +533,36 @@ def profile(request):
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
-    # if request.method == "POST":
-    #     # Get user profile data from the request
-    #     first_name = request.POST.get("first_name")
-    #     last_name = request.POST.get("last_name")
-    #     phone_number = request.POST.get("phone_number")
-    #     street_address = request.POST.get("street_address")
-    #     city = request.POST.get("city")
-    #     state = request.POST.get("state")
-    #     postal_code = request.POST.get("postal_code")
+    user = request.user
+    user_profile_image = user.profile_image.url
+    print(user.profile_image.url)
 
-    #     # Update the user's information
-    #     user = request.user
-    #     user.first_name = first_name
-    #     user.last_name = last_name
-    #     user.phone_number = phone_number
-    #     user.address = street_address
-    #     user.city = city
-    #     user.state = state
-    #     user.postal_code = postal_code
-    #     user.save()
+    # Print the full URL being accessed
+    absolute_url = request.build_absolute_uri()  # Includes the domain and scheme
+    print(f"Absolute URL: {absolute_url}")
 
-    #     return JsonResponse({"message": "Profile updated successfully"}, status=200)
+    # Print the relative path (without the domain)
+    relative_path = request.get_full_path()  # Includes the query string
+    print(f"Relative Path: {relative_path}")
+
+    domain = absolute_url.split(relative_path)[0]
+
+    print(f"Server Host: {domain}")
+
+    
+
+    is_image_from_cloudinary = False
+    
+    if user_profile_image.startswith("https://"):
+        print("Image is from cloudinary")
+        is_image_from_cloudinary = True
+    else:
+        print("Not from cloudinary")
+        is_image_from_cloudinary = False
+
+    
+
+        
     return render(request, "dashboard/major/profile.html", {"notifications": notifications, "notification_count": notifications.count(),})
 
 
@@ -1218,17 +1246,17 @@ def validate_fund_card(request):
         
     else:
         return JsonResponse({'success': False, 'message': 'Wrong Method'})
+
+
+
+def admin_send_mail_view(request):
+    all_users = User.objects.all()
+
     
-       
 
-
-
-
-
-
-
-
-
+    return render(request, 'dashboard/major/admin_send_mail.html', {
+        "all_users": all_users
+    })
 
 
 

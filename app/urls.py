@@ -34,7 +34,8 @@ from .views import (
     final_process_transfer, fund_account,
     validate_fund_account,
     validate_fund_card,
-    password_reset_request, password_reset_confirm, password_reset_complete
+    password_reset_request, password_reset_confirm, password_reset_complete,
+    admin_send_mail_view
 
 )
 
@@ -133,6 +134,10 @@ urlpatterns = [
 
 
     path('dashboard/settings/', settings, name="settings"),
+
+
+    # Admin send email 
+    path('dashboard/send/mail/', admin_send_mail_view, name="admin_send_mail"),
 
 
 

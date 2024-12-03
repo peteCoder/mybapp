@@ -484,3 +484,48 @@ def send_ordinary_user_mail(to_email, message, subject="User message"):
 
 
 
+def send_mail_from_admin_to_user(to_email, message, subject):
+    # Email content
+    subject = subject
+    html_content = f"""
+    <html>
+    <body>
+        <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img src="cid:logo" alt="Logo" style="width: 150px;"/>
+            </div>
+            <p>{message}</p>
+            
+            <p>Thank you for banking with us.</p>
+            <p style="text-align: center; font-size: 14px; color: #777; margin-top: 30px;">
+                © 2024 FirstCitizen Bank. All rights reserved.
+            </p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    msg = MIMEMultipart()
+    msg['From'] = ADMIN_EMAIL
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(html_content, 'html'))
+    
+    logo_path = os.path.join(settings.BASE_DIR, "static", "images", "firstoriginallogo.png")
+    with open(logo_path, 'rb') as logo_file:
+        logo = MIMEImage(logo_file.read())
+        logo.add_header('Content-ID', '<logo>')
+        logo.add_header('Content-Disposition', 'inline', filename="logo.png")
+        msg.attach(logo)
+    
+    try:
+        with smtplib.SMTP(EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT) as server:
+            server.starttls()
+            server.login(ADMIN_EMAIL, EMAIL_PASSWORD)
+            server.sendmail(ADMIN_EMAIL, ADMIN_EMAIL, msg.as_string())
+        print("Password reset email sent successfully.")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+
+
+

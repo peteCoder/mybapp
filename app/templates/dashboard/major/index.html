@@ -36,7 +36,8 @@
                 </div>
                 {% for account in accounts %}
                 {% if account %}
-                <div class="col-sm-6">
+                <a class="col-sm-6" href="{% url 'accounts_detail' account.id %}"
+                    style="display: block; text-decoration: none;">
                     <div class="card">
                         <div class="card-body">
                             <div class="row">
@@ -76,15 +77,13 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
                 {% endif %}
                 {% endfor %}
 
                 {% if has_loan %}
                 <h1 class="h3 mb-3"><strong>Loans</strong> </h1>
                 {% endif %}
-
-
 
                 {% if has_loan %}
                 <!-- Total Loan Balance -->
@@ -103,11 +102,6 @@
                             </div>
                             <h1 class="mt-1 mb-3 text-md" style="font-size: 25px !important;">
                                 ${{loan_total}}</h1>
-                            <!-- <div class="mb-0">
-                                <span class="text-success"><i class="mdi mdi-arrow-bottom-right"></i> 4.7%
-                                </span>
-                                <span class="text-muted">Since last month</span>
-                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -171,7 +165,7 @@
                                     <td>${{ transaction.amount }}</td>
                                     <td>
                                         <span
-                                            class="badge {% if transaction.status == 'successful' %} bg-success {% else %} bg-danger {% endif %}">
+                                            class="badge {% if not transaction.status == 'Pending' %} bg-success {% else %} bg-danger {% endif %}">
                                             {{ transaction.status|capfirst }}
                                         </span>
                                     </td>

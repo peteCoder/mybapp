@@ -478,6 +478,7 @@ class Loan(models.Model):
     loan_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
     is_paid = models.BooleanField(default=False)
+    account = models.ForeignKey(Account, on_delete=models.SET_NULL, blank=True, null=True)
 
     activation_receipt = models.FileField(upload_to='receipts/', null=True, blank=True)
     activated = models.BooleanField(default=False)

@@ -4,9 +4,16 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 
 from .constants import ACCOUNTS
+
+from django.contrib.auth import update_session_auth_hash
 import json
 
-from .email import send_beautiful_html_email_create_account, send_admin_mail, send_ordinary_user_mail
+from .email import (
+    send_beautiful_html_email_create_account, 
+    send_admin_mail, 
+    send_ordinary_user_mail,
+    send_mail_from_admin_to_user,
+)
 
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
@@ -564,3 +571,99 @@ def confirm_new_card_activation(request, pk):
 
     
     return Response({"success": False, "message":" Bad Request"})
+
+
+
+
+@api_view(['POST'])
+def api_send_admin_mail(request):
+    if request.method == 'POST':
+        email = request.data.get("email")
+        body = request.data.get("body")
+        subject = request.data.get("subject")
+
+        try:
+
+            send_mail_from_admin_to_user(
+                to_email=email,
+                subject=subject,
+                message=body,
+
+            )
+
+            print(f"Email: {email}; \n Subject: {subject}; \n Body: {body} \n" )
+        
+            return Response({"success": True, "message":f"Your email is has been sent to {email}"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"success": False, "message":f"Server error email could not go through"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response({"success": False, "message":f"Http Method is not allowed!"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(['POST'])
+def change_password_api_view(request):
+    data = request.data
+    new_password = data.get("new_password")
+    old_password = data.get("old_password")
+    confirm_password = data.get("confirm_password")
+
+    user = request.user
+
+    if new_password != confirm_password:
+        print("New passwords do not match.")
+        return Response({'error': 'New passwords do not match.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Check if user old_password is correct
+    if not user.check_password(old_password):
+        return Response({'error': 'Current password is incorrect.', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+    
+    request.user.set_password(new_password)
+    request.user.save()
+    # Prevents logging out after password change
+    update_session_auth_hash(request, request.user)
+
+
+    return Response({'message': 'Password updated successfully.', 'success': True}, status=status.HTTP_201_CREATED)
+
+
+
+@api_view(['POST'])
+def update_profile_api_view(request):
+    if request.method == "POST":
+        data = request.data
+        files = request.FILES
+
+        user = request.user
+
+        first_name = data.get("first_name")
+        last_name = data.get("last_name")
+        state = data.get("state")
+        city = data.get("city")
+        country = data.get("country")
+        address = data.get("address")
+        profile_image = files.get("profile_image")
+
+        user.first_name = first_name
+        user.last_name = last_name
+        user.state = state
+        user.city = city
+        user.country = country
+        user.address = address
+
+        if profile_image:
+            user.profile_image = profile_image
+
+        user.save()
+
+        return Response({"message": "Profile updated successfully.", 'success': True}, status=status.HTTP_200_OK)
+    else:
+        return Response({"error": "Method is not allowed.", 'success': False}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+
+
+
+
+
+
+
+

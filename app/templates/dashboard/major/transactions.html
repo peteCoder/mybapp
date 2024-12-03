@@ -35,7 +35,7 @@
                                         <td>${{ transaction.amount }}</td>
                                         <td>
                                             <span
-                                                class="badge {% if transaction.status == 'successful' %} bg-success {% else %} bg-danger {% endif %}">
+                                                class="badge {% if not transaction.status == 'Pending' %} bg-success {% else %} bg-danger {% endif %}">
                                                 {{ transaction.status|capfirst }}
                                             </span>
                                         </td>

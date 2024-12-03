@@ -1,0 +1,166 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+
+
+
+{% block style %}
+<style>
+    .asterisks {
+        color: red;
+    }
+</style>
+
+{% endblock %}
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3"><strong>Admin</strong> Send Mail To Users</h1>
+
+        <!-- Form for Support Submission -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Submit a Mail</h5>
+                        <form id="supportForm">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">User to receive your mail<span
+                                        class="asterisks">*</span>
+                                </label>
+                                <select id="email" name="email" class="form-select" required
+                                    aria-label="Default select example" required>
+                                    {% for user in all_users %}
+                                    <option value="{{user.email}}">
+                                        {{user.email}} -- {{user.first_name}} {{user.last_name}}
+                                    </option>
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Subject<span class="asterisks">*</span></label>
+                                <input type="text" class="form-control" id="subject" name="subject"
+                                    placeholder="Enter the subject of your request" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="body" class="form-label">Body<span class="asterisks">*</span></label>
+                                <textarea class="form-control" id="body" name="body" rows="5"
+                                    placeholder="Provide a detailed body of your request" required></textarea>
+                            </div>
+
+
+
+                            <button type="button" class="btn btn-primary" id="submitBtn">Submit Request</button>
+                            <span id="loadingText" style="display: none;">Sending...</span>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Modal for Success Confirmation -->
+        <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-5">
+                        Your support request has been successfully submitted.
+                    </div>
+                    <div class="modal-footer">
+                        <button id="closeModal" type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+{% endblock %}
+{% block script %}
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script> -->
+
+<script>
+
+    document.getElementById("closeModal").onclick = function () {
+        window.location.href = "{% url 'admin_send_mail' %}";
+    }
+
+
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+        const email = document.getElementById('email').value;
+        const subject = document.getElementById('subject').value;
+        const body = document.getElementById('body').value;
+
+        if (!email) {
+            document.querySelector(".modal-body").innerText = "Email is required";
+            document.querySelector(".modal-body").setAttribute("class", "text-danger");
+            new bootstrap.Modal(document.getElementById('successModal')).show();
+            return;
+        }
+        if (!subject) {
+            document.querySelector(".modal-body").innerText = "Subject is required";
+            document.querySelector(".modal-body").setAttribute("class", "text-danger");
+
+            new bootstrap.Modal(document.getElementById('successModal')).show();
+            return;
+        }
+        if (!body) {
+            document.querySelector(".modal-body").innerText = "Description is required";
+            document.querySelector(".modal-body").setAttribute("class", "text-danger");
+            new bootstrap.Modal(document.getElementById('successModal')).show();
+            return;
+        }
+        const loadingText = document.getElementById('loadingText');
+        const csrfToken = '{{ csrf_token }}';
+
+        loadingText.style.display = 'inline';
+
+        // Construct form data
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('subject', subject);
+        formData.append('body', body);
+
+
+        try {
+            const response = await fetch('/api/api-send-admin-mail/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                loadingText.style.display = 'none';
+                document.querySelector(".modal-body").innerText = "Thanks for your feedback. Please do not resend this message. We will respond in due time.";
+                document.querySelector(".modal-body").setAttribute("class", "text-success");
+                new bootstrap.Modal(document.getElementById('successModal')).show();
+
+            } else {
+                alert('Error submitting support request. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            loadingText.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}
