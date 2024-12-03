@@ -534,8 +534,8 @@ def profile(request):
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
     user = request.user
-    user_profile_image = user.profile_image.url
-    print(user.profile_image.url)
+    # user_profile_image = user.profile_image.url
+    # print(user.profile_image.url)
 
     # Print the full URL being accessed
     absolute_url = request.build_absolute_uri()  # Includes the domain and scheme
@@ -551,14 +551,7 @@ def profile(request):
 
     
 
-    is_image_from_cloudinary = False
     
-    if user_profile_image.startswith("https://"):
-        print("Image is from cloudinary")
-        is_image_from_cloudinary = True
-    else:
-        print("Not from cloudinary")
-        is_image_from_cloudinary = False
 
     
 
