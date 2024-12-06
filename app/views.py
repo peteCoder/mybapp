@@ -864,7 +864,7 @@ def create_debit_card(request):
 
     # Get the types of cards the user hasn't created yet
     existing_card_types = Card.objects.filter(user=request.user).values_list('card_type', flat=True)
-    available_card_types = [card for card in ['MasterCard', 'Verve', 'Visa'] if card not in existing_card_types]
+    available_card_types = [card for card in ['MasterCard', 'Visa'] if card not in existing_card_types]
 
     if request.method == 'POST':
         data = request.POST
@@ -956,16 +956,6 @@ def connect_debit_card(request):
 
 
 
-
-
-
-
-
-
-
-
-
-
 # @login_required
 def settings(request):
     transactions = Transaction.objects.filter(user=request.user)
@@ -973,14 +963,7 @@ def settings(request):
     return render(request, 'dashboard/major/account_settings.html', {"transactions": transactions})
 
 
-
-
-
-
-
-
 # MAIN PAGES
-
 def main_home(request):
     
     account_model_meta = {
@@ -1020,9 +1003,7 @@ def routing_number(request):
 
 def privacy_security(request):
     return render(request, "main/privacy_security.html", {})
-
-
-
+    
 
 # View to handle password reset request
 def password_reset_request(request):
@@ -1030,6 +1011,7 @@ def password_reset_request(request):
         email = request.POST.get('email')
         reset_email_url = request.POST.get('password_url')
         user = User.objects.filter(email=email).first()
+        
         if user:
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
@@ -1055,6 +1037,7 @@ def password_reset_confirm(request, uidb64, token):
                 if default_token_generator.check_token(user, token):
                     user.set_password(new_password)
                     user.save()
+                    
                     return JsonResponse({'success': 'Password reset successfully'})
                 else:
                     return JsonResponse({'error': 'Invalid token'}, status=400)

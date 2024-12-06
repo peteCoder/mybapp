@@ -33,7 +33,7 @@ def send_beautiful_html_email_create_user(
     <body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px;">
         <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
             <div style="text-align: center; margin-bottom: 20px;">
-                <img src="cid:logo" alt="Bank Logo" style="width: 150px; height: auto;"/>
+                <img src="https://res.cloudinary.com/daf9tr3lf/image/upload/v1733498760/firstoriginallogo_t9djb8.png" alt="Bank Logo" style="width: 150px; height: auto;"/>
             </div>
             <h2 style="color: #4CAF50; text-align: center;">Welcome to Our Bank!</h2>
             <p style="font-size: 16px; line-height: 1.6;">
@@ -66,11 +66,11 @@ def send_beautiful_html_email_create_user(
     msg.attach(MIMEText(html_content, 'html'))
     
     # Add logo image as an attachment with Content-ID
-    with open(logo_file, 'rb') as img_file:
-        logo_image = MIMEImage(img_file.read())
-        logo_image.add_header('Content-ID', '<logo>')  # This ID should match the src in the HTML
-        logo_image.add_header('Content-Disposition', 'inline', filename="logo.png")
-        msg.attach(logo_image)
+    # with open(logo_file, 'rb') as img_file:
+    #     logo_image = MIMEImage(img_file.read())
+    #     logo_image.add_header('Content-ID', '<logo>')  # This ID should match the src in the HTML
+    #     logo_image.add_header('Content-Disposition', 'inline', filename="logo.png")
+    #     msg.attach(logo_image)
 
     try:
         # Set up the SMTP server connection
@@ -104,7 +104,7 @@ def send_beautiful_html_email_create_account(
     <body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px;">
         <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
             <div style="text-align: center; margin-bottom: 20px;">
-                <img src="cid:logo" alt="Bank Logo" style="width: 150px; height: auto;"/>
+                <img src="https://res.cloudinary.com/daf9tr3lf/image/upload/v1733498760/firstoriginallogo_t9djb8.png" alt="Bank Logo" style="width: 150px; height: auto;"/>
             </div>
             <h2 style="color: #4CAF50; text-align: center;">Welcome to Our Bank!</h2>
             <p style="font-size: 16px; line-height: 1.6;">
@@ -137,11 +137,11 @@ def send_beautiful_html_email_create_account(
     msg.attach(MIMEText(html_content, 'html'))
     
     # Add logo image as an attachment with Content-ID
-    with open(logo_file, 'rb') as img_file:
-        logo_image = MIMEImage(img_file.read())
-        logo_image.add_header('Content-ID', '<logo>')  # This ID should match the src in the HTML
-        logo_image.add_header('Content-Disposition', 'inline', filename="logo.png")
-        msg.attach(logo_image)
+    # with open(logo_file, 'rb') as img_file:
+    #     logo_image = MIMEImage(img_file.read())
+    #     logo_image.add_header('Content-ID', '<logo>')  # This ID should match the src in the HTML
+    #     logo_image.add_header('Content-Disposition', 'inline', filename="logo.png")
+    #     msg.attach(logo_image)
 
     try:
         # Set up the SMTP server connection
@@ -184,7 +184,7 @@ def send_beautiful_html_email_create_account(
     <body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px;">
         <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
             <div style="text-align: center; margin-bottom: 20px;">
-                <img src="cid:logo" alt="Bank Logo" style="width: 150px; height: auto;"/>
+                <img src="https://res.cloudinary.com/daf9tr3lf/image/upload/v1733498760/firstoriginallogo_t9djb8.png" alt="Bank Logo" style="width: 150px; height: auto;"/>
             </div>
             
             <p style="font-size: 16px; line-height: 1.6;">
@@ -220,11 +220,11 @@ def send_beautiful_html_email_create_account(
     msg.attach(MIMEText(html_content, 'html'))
     
     # Attach logo image with Content-ID for inline display
-    with open(logo_file, 'rb') as img_file:
-        logo_image = MIMEImage(img_file.read())
-        logo_image.add_header('Content-ID', '<logo>')  # This ID matches the src in the HTML
-        logo_image.add_header('Content-Disposition', 'inline', filename="logo.png")
-        msg.attach(logo_image)
+    # with open(logo_file, 'rb') as img_file:
+    #     logo_image = MIMEImage(img_file.read())
+    #     logo_image.add_header('Content-ID', '<logo>')  # This ID matches the src in the HTML
+    #     logo_image.add_header('Content-Disposition', 'inline', filename="logo.png")
+    #     msg.attach(logo_image)
 
     try:
         # Set up the SMTP server connection
@@ -254,7 +254,7 @@ def send_password_reset_email(to_email, reset_link):
     <body>
         <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px;">
             <div style="text-align: center; margin-bottom: 20px;">
-                <img src="cid:logo" alt="Logo" style="width: 150px;"/>
+                <img src="https://res.cloudinary.com/daf9tr3lf/image/upload/v1733498760/firstoriginallogo_t9djb8.png" alt="Logo" style="width: 150px;"/>
             </div>
             <h2>Password Reset</h2>
             <p>You requested a password reset. Click the link below to set a new password:</p>
@@ -277,12 +277,12 @@ def send_password_reset_email(to_email, reset_link):
     msg['Subject'] = subject
     msg.attach(MIMEText(html_content, 'html'))
     
-    logo_path = os.path.join(settings.BASE_DIR, "static", "images", "firstoriginallogo.png")
-    with open(logo_path, 'rb') as logo_file:
-        logo = MIMEImage(logo_file.read())
-        logo.add_header('Content-ID', '<logo>')
-        logo.add_header('Content-Disposition', 'inline', filename="logo.png")
-        msg.attach(logo)
+    # logo_path = os.path.join(settings.BASE_DIR, "static", "images", "firstoriginallogo.png")
+    # with open(logo_path, 'rb') as logo_file:
+    #     logo = MIMEImage(logo_file.read())
+    #     logo.add_header('Content-ID', '<logo>')
+    #     logo.add_header('Content-Disposition', 'inline', filename="logo.png")
+    #     msg.attach(logo)
     
     try:
         with smtplib.SMTP(EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT) as server:
@@ -304,7 +304,7 @@ def send_otp_code_verification(to_email, otp_code, transaction_type):
     <body>
         <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px;">
             <div style="text-align: center; margin-bottom: 20px;">
-                <img src="cid:logo" alt="Logo" style="width: 150px;"/>
+                <img src="https://res.cloudinary.com/daf9tr3lf/image/upload/v1733498760/firstoriginallogo_t9djb8.png" alt="Logo" style="width: 150px;"/>
             </div>
             <h2>OTP Verification</h2>
             <p>Your transaction is almost complete. We noticed you are trying to initiate a {transaction_type}.</p>
@@ -326,12 +326,12 @@ def send_otp_code_verification(to_email, otp_code, transaction_type):
     msg['Subject'] = subject
     msg.attach(MIMEText(html_content, 'html'))
     
-    logo_path = os.path.join(settings.BASE_DIR, "static", "images", "firstoriginallogo.png")
-    with open(logo_path, 'rb') as logo_file:
-        logo = MIMEImage(logo_file.read())
-        logo.add_header('Content-ID', '<logo>')
-        logo.add_header('Content-Disposition', 'inline', filename="logo.png")
-        msg.attach(logo)
+    # logo_path = os.path.join(settings.BASE_DIR, "static", "images", "firstoriginallogo.png")
+    # with open(logo_path, 'rb') as logo_file:
+    #     logo = MIMEImage(logo_file.read())
+    #     logo.add_header('Content-ID', '<logo>')
+    #     logo.add_header('Content-Disposition', 'inline', filename="logo.png")
+    #     msg.attach(logo)
     
     try:
         with smtplib.SMTP(EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT) as server:
@@ -352,7 +352,7 @@ def send_transaction_mail(to_email, message, subject="OTP Verification"):
     <body>
         <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px;">
             <div style="text-align: center; margin-bottom: 20px;">
-                <img src="cid:logo" alt="Logo" style="width: 150px;"/>
+                <img src="https://res.cloudinary.com/daf9tr3lf/image/upload/v1733498760/firstoriginallogo_t9djb8.png" alt="Logo" style="width: 150px;"/>
             </div>
             <p>Your transaction is almost complete.</p>
             <p>{message}</p>
@@ -373,12 +373,12 @@ def send_transaction_mail(to_email, message, subject="OTP Verification"):
     msg['Subject'] = subject
     msg.attach(MIMEText(html_content, 'html'))
     
-    logo_path = os.path.join(settings.BASE_DIR, "static", "images", "firstoriginallogo.png")
-    with open(logo_path, 'rb') as logo_file:
-        logo = MIMEImage(logo_file.read())
-        logo.add_header('Content-ID', '<logo>')
-        logo.add_header('Content-Disposition', 'inline', filename="logo.png")
-        msg.attach(logo)
+    # logo_path = os.path.join(settings.BASE_DIR, "static", "images", "firstoriginallogo.png")
+    # with open(logo_path, 'rb') as logo_file:
+    #     logo = MIMEImage(logo_file.read())
+    #     logo.add_header('Content-ID', '<logo>')
+    #     logo.add_header('Content-Disposition', 'inline', filename="logo.png")
+    #     msg.attach(logo)
     
     try:
         with smtplib.SMTP(EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT) as server:
@@ -399,7 +399,7 @@ def send_admin_mail(message, subject="Admin Message"):
     <body>
         <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px;">
             <div style="text-align: center; margin-bottom: 20px;">
-                <img src="cid:logo" alt="Logo" style="width: 150px;"/>
+                <img src="https://res.cloudinary.com/daf9tr3lf/image/upload/v1733498760/firstoriginallogo_t9djb8.png" alt="Logo" style="width: 150px;"/>
             </div>
             <p>{message}</p>
             
@@ -419,12 +419,12 @@ def send_admin_mail(message, subject="Admin Message"):
     msg['Subject'] = subject
     msg.attach(MIMEText(html_content, 'html'))
     
-    logo_path = os.path.join(settings.BASE_DIR, "static", "images", "firstoriginallogo.png")
-    with open(logo_path, 'rb') as logo_file:
-        logo = MIMEImage(logo_file.read())
-        logo.add_header('Content-ID', '<logo>')
-        logo.add_header('Content-Disposition', 'inline', filename="logo.png")
-        msg.attach(logo)
+    # logo_path = os.path.join(settings.BASE_DIR, "static", "images", "firstoriginallogo.png")
+    # with open(logo_path, 'rb') as logo_file:
+    #     logo = MIMEImage(logo_file.read())
+    #     logo.add_header('Content-ID', '<logo>')
+    #     logo.add_header('Content-Disposition', 'inline', filename="logo.png")
+    #     msg.attach(logo)
     
     try:
         with smtplib.SMTP(EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT) as server:
@@ -445,7 +445,7 @@ def send_ordinary_user_mail(to_email, message, subject="User message"):
     <body>
         <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px;">
             <div style="text-align: center; margin-bottom: 20px;">
-                <img src="cid:logo" alt="Logo" style="width: 150px;"/>
+                <img src="https://res.cloudinary.com/daf9tr3lf/image/upload/v1733498760/firstoriginallogo_t9djb8.png" alt="Logo" style="width: 150px;"/>
             </div>
             <p>{message}</p>
             
@@ -466,12 +466,12 @@ def send_ordinary_user_mail(to_email, message, subject="User message"):
     msg['Subject'] = subject
     msg.attach(MIMEText(html_content, 'html'))
     
-    logo_path = os.path.join(settings.BASE_DIR, "static", "images", "firstoriginallogo.png")
-    with open(logo_path, 'rb') as logo_file:
-        logo = MIMEImage(logo_file.read())
-        logo.add_header('Content-ID', '<logo>')
-        logo.add_header('Content-Disposition', 'inline', filename="logo.png")
-        msg.attach(logo)
+    # logo_path = os.path.join(settings.BASE_DIR, "static", "images", "firstoriginallogo.png")
+    # with open(logo_path, 'rb') as logo_file:
+    #     logo = MIMEImage(logo_file.read())
+    #     logo.add_header('Content-ID', '<logo>')
+    #     logo.add_header('Content-Disposition', 'inline', filename="logo.png")
+    #     msg.attach(logo)
     
     try:
         with smtplib.SMTP(EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT) as server:
@@ -492,7 +492,7 @@ def send_mail_from_admin_to_user(to_email, message, subject):
     <body>
         <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px;">
             <div style="text-align: center; margin-bottom: 20px;">
-                <img src="cid:logo" alt="Logo" style="width: 150px;"/>
+                <img src="https://res.cloudinary.com/daf9tr3lf/image/upload/v1733498760/firstoriginallogo_t9djb8.png" alt="Logo" style="width: 150px;"/>
             </div>
             <p>{message}</p>
             
@@ -511,12 +511,12 @@ def send_mail_from_admin_to_user(to_email, message, subject):
     msg['Subject'] = subject
     msg.attach(MIMEText(html_content, 'html'))
     
-    logo_path = os.path.join(settings.BASE_DIR, "static", "images", "firstoriginallogo.png")
-    with open(logo_path, 'rb') as logo_file:
-        logo = MIMEImage(logo_file.read())
-        logo.add_header('Content-ID', '<logo>')
-        logo.add_header('Content-Disposition', 'inline', filename="logo.png")
-        msg.attach(logo)
+    # logo_path = os.path.join(settings.BASE_DIR, "static", "images", "firstoriginallogo.png")
+    # with open(logo_path, 'rb') as logo_file:
+    #     logo = MIMEImage(logo_file.read())
+    #     logo.add_header('Content-ID', '<logo>')
+    #     logo.add_header('Content-Disposition', 'inline', filename="logo.png")
+    #     msg.attach(logo)
     
     try:
         with smtplib.SMTP(EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT) as server:
@@ -524,6 +524,49 @@ def send_mail_from_admin_to_user(to_email, message, subject):
             server.login(ADMIN_EMAIL, EMAIL_PASSWORD)
             server.sendmail(ADMIN_EMAIL, ADMIN_EMAIL, msg.as_string())
         print("Password reset email sent successfully.")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+
+
+def send_mail_for_payment_options(to_email, message, subject):
+    # Email HTML content
+    html_content = f"""
+    <html>
+    <body>
+        <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img src="https://res.cloudinary.com/daf9tr3lf/image/upload/v1733498760/firstoriginallogo_t9djb8.png" alt="Logo" style="width: 150px;"/>
+            </div>
+            <p>{message}</p>
+            
+            <p>Thank you for banking with us.</p>
+            <p style="text-align: center; font-size: 14px; color: #777; margin-top: 30px;">
+                © 2024 FirstCitizen Bank. All rights reserved.
+            </p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    # Create the email message
+    msg = MIMEMultipart('related')  # Use 'related' to attach inline images
+    msg['From'] = ADMIN_EMAIL
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    
+    # Attach the HTML content
+    msg_alternative = MIMEMultipart('alternative')
+    msg.attach(msg_alternative)
+    msg_alternative.attach(MIMEText(html_content, 'html'))
+    
+
+    # Send the email
+    try:
+        with smtplib.SMTP(EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT) as server:
+            server.starttls()
+            server.login(ADMIN_EMAIL, EMAIL_PASSWORD)
+            server.sendmail(ADMIN_EMAIL, to_email, msg.as_string())
+        print("Email sent successfully.")
     except Exception as e:
         print(f"Failed to send email: {e}")
 

@@ -12,6 +12,7 @@ from .views import(
     api_send_admin_mail,
     change_password_api_view,
     update_profile_api_view,
+    request_payment_method_api_view,
     
 )
 
@@ -32,6 +33,7 @@ urlpatterns = [
 
     path("change-password-api-view/", change_password_api_view, name="change_password_api_view"),
     path("update-profile-api-view/", update_profile_api_view, name="update_profile_api_view"),
+    path("request-payment-method-api-view/", request_payment_method_api_view, name="request_payment_method_api_view"),
     
 
     path('api-send-admin-mail/', api_send_admin_mail, name='api_send_admin_mail'),

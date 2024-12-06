@@ -438,9 +438,9 @@ class Card(models.Model):
         elif self.card_type == "Visa":
             self.card_activation_fee = 90
         elif self.card_type == "Gold":
-            self.card_activation_fee = 60
-        elif self.card_type == "Premium":
-            self.card_activation_fee = 70
+            self.card_activation_fee = 170
+        elif self.card_type == "Platinum":
+            self.card_activation_fee = 190
         else:
             self.card_activation_fee = 60
 
@@ -576,7 +576,7 @@ class Payment(models.Model):
     ]
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     transaction_type = models.CharField(max_length=400, blank=True, null=False, choices=TRANSACTION_TYPE)
-    amount = models.IntegerField(blank=True, null=True)
+    amount = models.DecimalField(decimal_places=2, max_digits=10, blank=True, null=True)
     confirmation_receipt = models.FileField(upload_to='receipts/', null=True, blank=True)
     payment_method = models.CharField(max_length=400, blank=True, null=False, choices=PAYMENT_METHOD)
     is_tax = models.BooleanField(default=False)

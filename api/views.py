@@ -13,6 +13,7 @@ from .email import (
     send_admin_mail, 
     send_ordinary_user_mail,
     send_mail_from_admin_to_user,
+    send_mail_for_payment_options,
 )
 
 from django.core.mail import send_mail
@@ -588,7 +589,6 @@ def api_send_admin_mail(request):
                 to_email=email,
                 subject=subject,
                 message=body,
-
             )
 
             print(f"Email: {email}; \n Subject: {subject}; \n Body: {body} \n" )
@@ -657,6 +657,31 @@ def update_profile_api_view(request):
         return Response({"message": "Profile updated successfully.", 'success': True}, status=status.HTTP_200_OK)
     else:
         return Response({"error": "Method is not allowed.", 'success': False}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+
+@api_view(['POST'])
+def request_payment_method_api_view(request):
+
+    send_mail_for_payment_options(
+        to_email=request.user.email,
+        message="Here are your payment options. You can pay using the following payment options: ",
+        subject="Payment options",
+    )
+    
+    return Response({"message": "An email has been sent to you containing the payment options.", 'success': True}, status=status.HTTP_200_OK)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

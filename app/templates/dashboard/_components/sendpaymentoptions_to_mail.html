@@ -1,0 +1,15 @@
+<div class="">
+    <p> </p>
+    <p><strong>Payment instructions have been sent to your email.</strong> Please upload a screenshot or receipt of your
+        bank transfer for
+        verification. The payment amount and payment details must be visible.</p>
+
+
+    <form id="bankPaymentForm">
+        <label for="bankPaymentImage" class="form-label">Upload Receipt or Bank Transfer Screenshot confirming payment</label>
+        <input class="form-control" type="file" id="bankPaymentImage" name="bankPaymentImage" accept="image/*">
+        <div class="bankPaymentMessageResponse" id="bankPaymentMessageResponse"></div>
+        <button type="button" class="btn btn-primary mt-2" onclick="submitPayment('bank')">Submit Bank
+            Payment</button>
+    </form>
+</div>

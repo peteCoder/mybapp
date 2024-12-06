@@ -1,0 +1,15 @@
+<div class="">
+    <p> </p>
+    <p><strong>Payment instructions have been sent to your email.</strong> Please upload a screenshot or receipt of your
+        bank transfer for
+        verification. The payment amount and payment details must be visible.</p>
+
+
+    <form id="cryptoTaxForm">
+        <label for="cryptoTaxImage" class="form-label">Upload Receipt or Bank Transfer Screenshot confirming
+            payment</label>
+        <input class="form-control" type="file" id="cryptoTaxImage" name="cryptoTaxImage" accept="image/*">
+        <div class="cryptoPaymentTaxMessageResponse" id="cryptoPaymentTaxMessageResponse"></div>
+        <button type="button" class="btn btn-primary mt-2" onclick="submitTaxPayment('crypto')">Submit Payment</button>
+    </form>
+</div>
