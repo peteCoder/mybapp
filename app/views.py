@@ -52,11 +52,12 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
-from .constants import generate_4_digit_code
-
+from .constants import generate_4_digit_code, go_to_inactive_state
 
 
 User = get_user_model()
+
+
 
 def get_monthly_transactions(account_type, year, user):
     transactions = Transaction.objects.filter(
@@ -78,6 +79,10 @@ def get_monthly_transactions(account_type, year, user):
 
 # Create your views here.
 def home(request):
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
     # user = User.objects.filter(email=request.user.email).first()
     # print(user.email)
 
@@ -247,6 +252,10 @@ def chartpage(request):
 
 @login_required
 def transactions(request):
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -255,6 +264,10 @@ def transactions(request):
 
 @login_required
 def transfer_funds(request):
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -269,6 +282,7 @@ def transfer_funds(request):
 
 @csrf_exempt
 def validate_transfer(request):
+    
     if request.method == 'POST':
         from_account_id = request.POST.get('from_account')
         amount = request.POST.get('amount')
@@ -418,6 +432,13 @@ def confirm_transfer(request):
 
 @login_required
 def create_loan(request):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -464,6 +485,13 @@ def create_loan(request):
 
 @login_required
 def loans(request):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -478,6 +506,13 @@ def loans(request):
 
 @login_required
 def loan_detail(request, pk):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -488,6 +523,13 @@ def loan_detail(request, pk):
 
 @login_required
 def confirm_loan_activation_payment(request, pk):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -530,6 +572,13 @@ def confirm_loan_activation_payment(request, pk):
 @login_required
 @require_http_methods(["GET", "POST"])
 def profile(request):
+
+    # inactive_redirect = go_to_inactive_state(request)
+    # if inactive_redirect:
+    #     return inactive_redirect  # Return the redirect response
+
+
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -561,6 +610,9 @@ def profile(request):
 
 @login_required
 def update_personal_info(request):
+
+    
+
     if request.method == 'POST':
         user = request.user
         user.first_name = request.POST.get('first_name')
@@ -575,6 +627,13 @@ def update_personal_info(request):
 
 @login_required
 def update_address_info(request):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     if request.method == 'POST':
         user = request.user
         user.address = request.POST.get('address')
@@ -591,6 +650,13 @@ def update_address_info(request):
 
 @login_required
 def update_password(request):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     if request.method == 'POST':
         old_password = request.POST.get('old_password')
         new_password = request.POST.get('new_password')
@@ -621,6 +687,13 @@ def update_password(request):
 
 @login_required
 def support_page(request):
+
+    # inactive_redirect = go_to_inactive_state(request)
+    # if inactive_redirect:
+    #     return inactive_redirect  # Return the redirect response
+
+
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -629,6 +702,14 @@ def support_page(request):
 
 @login_required
 def account_details(request, pk):
+
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -655,6 +736,14 @@ def account_details(request, pk):
 
 @login_required
 def accounts_list(request):
+
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -668,6 +757,13 @@ def accounts_list(request):
 
 @login_required
 def create_bank_account(request):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     user = request.user
     existing_account_types = Account.objects.filter(customer=user).values_list('account_type', flat=True)
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
@@ -781,6 +877,13 @@ def create_bank_account(request):
 
 @login_required
 def confirm_account_activation_payment(request, pk):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     account = Account.objects.get(id=pk)
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
@@ -808,6 +911,13 @@ def confirm_account_activation_payment(request, pk):
 
 @login_required
 def debit_card_list(request):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -818,6 +928,13 @@ def debit_card_list(request):
 
 @login_required
 def debit_card_detail(request, pk):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -827,6 +944,13 @@ def debit_card_detail(request, pk):
 
 @login_required
 def confirm_debit_card_payment(request, pk):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -853,6 +977,13 @@ def confirm_debit_card_payment(request, pk):
 
 @login_required
 def create_debit_card(request):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -917,6 +1048,13 @@ def create_debit_card(request):
 
 @login_required
 def connect_debit_card(request):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     notifications = Notification.objects.filter(user=request.user).order_by("-id")[:5]
     read_notifications = Notification.objects.filter(user=request.user).filter(is_read=True).order_by("-id")[:5]
 
@@ -956,15 +1094,34 @@ def connect_debit_card(request):
 
 
 
-# @login_required
+@login_required
 def settings(request):
+
+    # inactive_redirect = go_to_inactive_state(request)
+    # if inactive_redirect:
+    #     return inactive_redirect  # Return the redirect response
+
+
+
     transactions = Transaction.objects.filter(user=request.user)
 
     return render(request, 'dashboard/major/account_settings.html', {"transactions": transactions})
 
 
-# MAIN PAGES
+
+
+
+
+
+
+
+# ------------------------- MAIN PAGES -------------------------------------
 def main_home(request):
+
+    # inactive_redirect = go_to_inactive_state(request)
+    # if inactive_redirect:
+    #     return inactive_redirect  # Return the redirect response
+
     
     account_model_meta = {
         'model_name': Account._meta.model_name,  # Account model name
@@ -974,6 +1131,7 @@ def main_home(request):
     return render(request, "main/index.html", {})
 
 def about_page(request):
+    
     return render(request, "main/about.html", {})
 
 
@@ -1122,8 +1280,15 @@ def send_tax_payment_transfer_confirmation_from_user(request):
 
 
 
-
+@login_required
 def fund_account(request, account_id):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     try:
         account = Account.objects.get(pk=account_id)
     except Account.DoesNotExist:
@@ -1226,6 +1391,13 @@ def validate_fund_card(request):
 
 
 def admin_send_mail_view(request):
+
+    inactive_redirect = go_to_inactive_state(request)
+    if inactive_redirect:
+        return inactive_redirect  # Return the redirect response
+
+
+
     all_users = User.objects.all()
 
     
@@ -1233,6 +1405,12 @@ def admin_send_mail_view(request):
     return render(request, 'dashboard/major/admin_send_mail.html', {
         "all_users": all_users
     })
+
+
+def account_is_inactive_view(request):
+    return render(request, 'dashboard/major/inactiveuser_page.html', {})
+
+
 
 
 

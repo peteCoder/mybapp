@@ -1,5 +1,5 @@
 import random
-
+from django.shortcuts import render, redirect
 
 
 ACCOUNT_DETAILS = {
@@ -14,3 +14,11 @@ ACCOUNT_DETAILS = {
 # Generate user 4 digits verification code
 def generate_4_digit_code():
     return str(random.randint(1000, 9999))
+
+
+
+
+
+def go_to_inactive_state(request):
+    if not request.user.user_account_is_active:
+        return redirect("account_is_inactive_view")

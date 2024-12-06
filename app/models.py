@@ -56,6 +56,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     
     can_apply_for_loans = models.BooleanField(default=False)
     can_apply_for_account = models.BooleanField(default=True)
+    user_account_is_active = models.BooleanField(default=True)
 
     marital_status = models.CharField(max_length=100, choices=MARITAL_CHOICES, blank=True, null=True)
     number_of_dependents = models.IntegerField(blank=True, null=True) # Number of Children
