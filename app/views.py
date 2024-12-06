@@ -1408,6 +1408,8 @@ def admin_send_mail_view(request):
 
 
 def account_is_inactive_view(request):
+    if request.user.user_account_is_active:
+        return redirect("dasboard_home")
     return render(request, 'dashboard/major/inactiveuser_page.html', {})
 
 
