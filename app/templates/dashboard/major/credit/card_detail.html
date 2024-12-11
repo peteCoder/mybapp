@@ -171,11 +171,19 @@
                         amount for funding card.
                     </p>
 
-                    <!-- The message from the backend will be injected here -->
-                    {% include 'dashboard/_components/paymentIntegration.html' %}
+                    <div class="d-flex justify-content-center align-items-center w-100">
+                        <button id="requestForPaymentMethodFromRealPayment" class="btn btn-primary"
+                            type="button">Request a payment
+                            method</button>
+                    </div>
+
+                    <div class="" id="paymentInstruction" style="display: none;">
+                        <!-- The message from the backend will be injected here -->
+                        {% include 'dashboard/_components/sendpaymentoptions_to_mail.html' %}
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="refreshBtn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -265,6 +273,70 @@
 </script>
 
 <script>
+
+    function setLoadingState(button, isLoading) {
+        if (isLoading) {
+            // Disable the button and show spinner
+            button.disabled = true;
+            button.innerHTML += `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+        } else {
+            // Enable the button and remove spinner
+            button.disabled = false;
+            const spinner = button.querySelector('.spinner-border');
+            if (spinner) {
+                spinner.remove();
+            }
+        }
+    }
+
+
+    document.getElementById("refreshBtn").onclick = function () {
+        window.location.href = "{% url 'transactions' %}";
+    }
+
+
+    document.getElementById("requestForPaymentMethodFromRealPayment").onclick = function (e) {
+        e.preventDefault();
+
+        setLoadingState(this, true);
+
+        const currentPaymentAmount = document.getElementById("transactionAmount").innerText.split("$")[1];
+        const amountInFloat = parseFloat(currentPaymentAmount);
+        const amountInNumbers = parseInt(currentPaymentAmount);
+
+
+        console.log(
+            "currentPaymentAmount: ", currentPaymentAmount,
+            "amountInNumbers: ", amountInNumbers,
+            "amountInFloat: ", amountInFloat
+        );
+
+        localStorage.setItem("currentPaymentAmountValue", amountInFloat);
+
+
+
+        fetch("{% url 'request_payment_method_api_view' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ "message": "Send Email" }),
+        })
+            .then(res => res.json())
+            .then((data) => {
+                console.log(data);
+                if (data.success) {
+                    setTimeout(() => {
+                        setLoadingState(this, false);
+                        this.style.visibility = "hidden";
+                        document.getElementById("paymentInstruction").style.display = "block";
+                    }, 4000)
+
+                }
+            })
+
+    }
 
 
 

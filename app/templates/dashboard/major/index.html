@@ -120,7 +120,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col mt-0">
-                                        <h5 class="card-title  text-capitalize">
+                                        <h5 class="card-title" style="text-transform: uppercase;">
                                             {{ loan.loan_type }}
                                             {{ loan_model_meta.model_name }}
                                         </h5>
@@ -153,7 +153,8 @@
             <h1 class="h3 mb-3 mt-3"><strong>Debit Cards</strong> </h1>
             <div class="row mt-4">
                 {% for card in debit_cards %}
-                <a class="col-sm-6 d-inline-block" style="text-decoration: none;">
+                <a href="{% url 'debit_card_detail' card.pk %}" class="col-sm-6 d-inline-block"
+                    style="text-decoration: none;">
                     <div class="card shadow-sm" style="overflow: hidden;">
                         <div class="card-header d-flex justify-content-between align-items-center"
                             style="flex-wrap: wrap;">
@@ -165,17 +166,30 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <h4 class="text-muted card-title">{{ card.card_number }}</h4>
+                            <h4 class="text-muted card-title">
+                                {% if card.activated %}
+                                {{ card.card_number }}
+                                {% else %}
+                                #########################
+                                {% endif %}
+
+                            </h4>
                             <p class="card-text h3">{{ user.first_name }} {{ user.last_name }}</p>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;"
+                        <div style="display: flex; justify-content: space-between; align-items: center; "
                             class="card-footer text-muted">
                             <span>
-                                Validity: {% if card.month_and_year_of_expiration %}
+                                Validity:
+                                {% if card.activated %}
+                                {% if card.month_and_year_of_expiration %}
                                 {{card.month_and_year_of_expiration}}
                                 {% else %}
                                 {{card.expiration_date}}
                                 {% endif %}
+                                {% else %}
+                                ######
+                                {% endif %}
+
                             </span>
                             <span>
                                 {% if card.activated %}
@@ -197,7 +211,8 @@
             <h1 class="h3 mb-3 mt-3"><strong>Credit Cards</strong> </h1>
             <div class="row mt-4">
                 {% for card in credit_cards %}
-                <a class="col-sm-6 d-inline-block" style="text-decoration: none;">
+                <a href="{% url 'credit_card_detail' card.pk %}" class="col-sm-6 d-inline-block"
+                    style="text-decoration: none;">
                     <div class="card shadow-sm" style="overflow: hidden;">
                         <div class="card-header d-flex justify-content-between align-items-center"
                             style="flex-wrap: wrap;">
@@ -210,16 +225,27 @@
 
                         </div>
                         <div class="card-body">
-                            <h4 class="text-muted card-title">{{ card.card_number }}</h4>
+                            <h4 class="text-muted card-title">
+                                {% if card.activated %}
+                                {{ card.card_number }}
+                                {% else %}
+                                #########################
+                                {% endif %}
+                            </h4>
                             <p class="card-text h3">{{ user.first_name }} {{ user.last_name }}</p>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;"
+                        <div style="display: flex; justify-content: space-between; align-items: center; "
                             class="card-footer text-muted">
                             <span>
-                                Validity: {% if card.month_and_year_of_expiration %}
+                                Validity:
+                                {% if card.activated %}
+                                {% if card.month_and_year_of_expiration %}
                                 {{card.month_and_year_of_expiration}}
                                 {% else %}
                                 {{card.expiration_date}}
+                                {% endif %}
+                                {% else %}
+                                ######
                                 {% endif %}
                             </span>
                             <span>
@@ -237,7 +263,9 @@
             </div>
             {% endif %}
 
+            <br>
 
+            <h1 class="h3 mb-3 mt-3"><strong>Recent Transactions</strong> </h1>
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">

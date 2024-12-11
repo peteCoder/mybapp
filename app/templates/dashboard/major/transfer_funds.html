@@ -172,7 +172,7 @@
                                 <!-- <span id="loadingMessage" class="d-none" style="margin-left: 8px;">Sending...</span> -->
                             </button>
                             <div class="d-flex align-items-center">
-                                {% if user.user_account_is_temporarily_inactive %}
+                                {% if not user.user_account_is_temporarily_inactive %}
                                 <button type="submit" class="btn btn-success">Confirm Transfer</button>
                                 {% else %}
                                 <button id="errorSubmission" type="button" class="btn btn-success">Confirm
