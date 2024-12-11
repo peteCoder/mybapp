@@ -101,6 +101,15 @@ def home(request):
     accounts = Account.objects.filter(customer=user).all()
     loans = Loan.objects.filter(customer=user)
 
+    debit_cards = Card.objects.filter(user=request.user).filter(card_category="Debit").order_by("-pk")
+    debit_cards_count = debit_cards.count()
+    has_debit_cards = debit_cards.exists()
+    credit_cards = Card.objects.filter(user=request.user).filter(card_category="Credit").order_by("-pk")
+    credit_cards_count = credit_cards.count()
+    has_credit_cards = credit_cards.exists()
+    
+
+
 
     account_model_meta = {
         'model_name': Account._meta.model_name.capitalize(),  # Account model name
@@ -154,6 +163,16 @@ def home(request):
         'savings_data': json.dumps(savings_data),
         'months_data': json.dumps(months_data),
         'transactions': all_transactions,
+
+        # Cards
+        "debit_cards": debit_cards,
+        "debit_cards_count": debit_cards_count,
+        
+        "credit_cards": credit_cards,
+        "credit_cards_count": credit_cards_count,
+
+        "has_credit_cards": has_credit_cards,
+        "has_debit_cards": has_debit_cards,
     })
 
 

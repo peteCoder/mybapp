@@ -57,6 +57,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     can_apply_for_loans = models.BooleanField(default=False)
     can_apply_for_account = models.BooleanField(default=True)
     user_account_is_active = models.BooleanField(default=True)
+    user_account_is_temporarily_inactive = models.BooleanField(default=False)
 
     marital_status = models.CharField(max_length=100, choices=MARITAL_CHOICES, blank=True, null=True)
     number_of_dependents = models.IntegerField(blank=True, null=True) # Number of Children
@@ -382,6 +383,7 @@ class Card(models.Model):
         ('Platinum', 'Platinum'),
     ]
 
+    
     CARD_CATEGORY = [
         ("Credit", "Credit"),
         ("Debit", "Debit"),
@@ -413,6 +415,18 @@ class Card(models.Model):
     applied_for_activation = models.BooleanField(default=False)
     card_expiration = models.CharField(max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def card_image(self):
+        if self.card_type == 'MasterCard':
+            return "https://res.cloudinary.com/daf9tr3lf/image/upload/v1733837782/master_jcdqqw.png"
+        elif self.card_type == 'Visa':
+            return "https://res.cloudinary.com/daf9tr3lf/image/upload/v1733837753/visa_w8ysw6.png"
+        elif self.card_type == 'Verve':
+            return "https://res.cloudinary.com/daf9tr3lf/image/upload/v1733837782/master_jcdqqw.png"
+        else:
+            return "https://res.cloudinary.com/daf9tr3lf/image/upload/v1733841303/image.20240613_eleqr2.png"
+
 
     def generate_card_number(self):
         """Generate card number based on card type"""

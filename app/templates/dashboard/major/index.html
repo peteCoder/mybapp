@@ -1,10 +1,17 @@
 {% extends 'dashboard_base.html' %}
 {% load static %}
 
+
 {% block content %}
-<main class="content">
+
+
+
+
+<main class="content mt-0">
+
     <h1 style="text-transform: capitalize;" class="h3 mb-3"> <b>Welcome, <span
                 style="text-transform: capitalize;">{{user.first_name}}.</span></b> </h1>
+
 
     <div class="container-fluid p-0">
         {% if has_account %}
@@ -140,8 +147,96 @@
 
                 {% endif %}
 
-
             </div>
+
+            {% if has_debit_cards %}
+            <h1 class="h3 mb-3 mt-3"><strong>Debit Cards</strong> </h1>
+            <div class="row mt-4">
+                {% for card in debit_cards %}
+                <a class="col-sm-6 d-inline-block" style="text-decoration: none;">
+                    <div class="card shadow-sm" style="overflow: hidden;">
+                        <div class="card-header d-flex justify-content-between align-items-center"
+                            style="flex-wrap: wrap;">
+                            <h5 class="m-0 h3">FirstCitizen Bank</h5>
+                            <div class=""
+                                style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                <img width="40" src="{{ card.card_image }}" alt="Visa Logo">
+                                <span>{{card.card_type}}</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="text-muted card-title">{{ card.card_number }}</h4>
+                            <p class="card-text h3">{{ user.first_name }} {{ user.last_name }}</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;"
+                            class="card-footer text-muted">
+                            <span>
+                                Validity: {% if card.month_and_year_of_expiration %}
+                                {{card.month_and_year_of_expiration}}
+                                {% else %}
+                                {{card.expiration_date}}
+                                {% endif %}
+                            </span>
+                            <span>
+                                {% if card.activated %}
+                                <div class="badge bg-success">Active</div>
+                                {% else %}
+                                <div class="badge bg-danger">Inactive</div>
+                                {% endif %}
+                            </span>
+
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+
+            {% if has_credit_cards %}
+            <h1 class="h3 mb-3 mt-3"><strong>Credit Cards</strong> </h1>
+            <div class="row mt-4">
+                {% for card in credit_cards %}
+                <a class="col-sm-6 d-inline-block" style="text-decoration: none;">
+                    <div class="card shadow-sm" style="overflow: hidden;">
+                        <div class="card-header d-flex justify-content-between align-items-center"
+                            style="flex-wrap: wrap;">
+                            <h5 class="m-0 h3">FirstCitizen Bank</h5>
+                            <div class=""
+                                style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                <img width="40" src="{{ card.card_image }}" alt="Visa Logo">
+                                <span>{{card.card_type}}</span>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <h4 class="text-muted card-title">{{ card.card_number }}</h4>
+                            <p class="card-text h3">{{ user.first_name }} {{ user.last_name }}</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;"
+                            class="card-footer text-muted">
+                            <span>
+                                Validity: {% if card.month_and_year_of_expiration %}
+                                {{card.month_and_year_of_expiration}}
+                                {% else %}
+                                {{card.expiration_date}}
+                                {% endif %}
+                            </span>
+                            <span>
+                                {% if card.activated %}
+                                <div class="badge bg-success">Active</div>
+                                {% else %}
+                                <div class="badge bg-danger">Inactive</div>
+                                {% endif %}
+                            </span>
+
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
 
             <div class="card">
                 <div class="card-body">
@@ -182,6 +277,56 @@
             </div>
         </div>
 
+
+        <!-- Card Stuff
+        <div class="row gap-1">
+            <div class="col-sm-6 bg-primary">
+                <div class="card debit-card shadow bg-primary">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="m-0 text-white h2">FirstCitizen Bank</h5>
+                        <img width="50"
+                            src="https://res.cloudinary.com/daf9tr3lf/image/upload/v1733837713/visa_c3zgln.png"
+                            alt="MasterCard Logo" class="mastercard-logo">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-number mb-3">
+                            <h4 class="text-white">1234 5678 9012 3456</h4>
+                        </div>
+                        <div class="cardholder-info">
+                            <p class="text-white mb-0">Cardholder Name</p>
+                            <h5 class="text-white h4">John Doe</h5>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <p class="mb-0">Valid Thru: 12/28</p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-sm-6 bg-primary">
+                <div class="card debit-card shadow bg-primary">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="m-0 text-white h2">FirstCitizen Bank</h5>
+                        <img width="50"
+                            src="https://res.cloudinary.com/daf9tr3lf/image/upload/v1733837713/visa_c3zgln.png"
+                            alt="MasterCard Logo" class="mastercard-logo">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-number mb-3">
+                            <h4 class="text-white">1234 5678 9012 3456</h4>
+                        </div>
+                        <div class="cardholder-info">
+                            <p class="text-white mb-0">Cardholder Name</p>
+                            <h5 class="text-white h4">John Doe</h5>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <p class="mb-0">Valid Thru: 12/28</p>
+                    </div>
+                </div>
+
+            </div>
+        </div> -->
 
 
         <!-- Recent Transactions Section -->

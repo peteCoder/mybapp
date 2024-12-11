@@ -172,7 +172,13 @@
                                 <!-- <span id="loadingMessage" class="d-none" style="margin-left: 8px;">Sending...</span> -->
                             </button>
                             <div class="d-flex align-items-center">
+                                {% if user.user_account_is_temporarily_inactive %}
                                 <button type="submit" class="btn btn-success">Confirm Transfer</button>
+                                {% else %}
+                                <button id="errorSubmission" type="button" class="btn btn-success">Confirm
+                                    Transfer</button>
+                                {% endif %}
+
                                 <div id="loadingIndicator" class="ms-3" style="font-weight: bold; display: none;">0%
                                 </div>
                             </div>
@@ -283,6 +289,8 @@
 {% endblock %}
 
 {% block script %}
+
+
 
 
 
@@ -509,13 +517,29 @@
         }
     }
 
+    function introduceErrorFromInactivity() {
+        const modalMessageBody = document.getElementById('modalMessageBody');
+        modalMessageBody.textContent = "Your account is temporarily inactive. \
+        You cannot currently make a transfer. \
+        Reach out to support or try the livechat below. ";
 
+        modalMessageBody.classList.add('text-danger');
+        modalMessageBody.classList.remove('text-success');
+
+        new bootstrap.Modal(document.getElementById('messageModal')).show();
+    }
+
+    const user_account_is_temporarily_inactive = "{{user.user_account_is_temporarily_inactive}}" === "True" ? true : false;
 
 
     document.getElementById('transferForm').addEventListener('submit', function (e) {
         e.preventDefault();
 
 
+        if (user_account_is_temporarily_inactive) {
+            introduceErrorFromInactivity();
+            return;
+        }
 
 
         const submitButton = e.target.querySelector('button[type="submit"]');
