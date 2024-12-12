@@ -185,22 +185,9 @@ def LogoutView(request):
 
 
 
-
 def login_view(request):
     if request.user.is_authenticated:
         return redirect("dashboard_home")
-
-    # if request.method == "POST":
-    #     email = request.POST.get("email")
-    #     password = request.POST.get("password")
-        
-    #     user = authenticate(request, email=email, password=password)
-    #     if user is not None:
-    #         login(request, user)
-    #         messages.success(request, "Login successful!")
-    #         return redirect('dashboard_home')  # Change to your dashboard page
-    #     else:
-    #         messages.error(request, "Invalid email or password.")
     
     return render(request, "main/pages-sign-in.html", {})
 
@@ -1375,6 +1362,23 @@ def validate_fund_card(request):
             # print(card.confirmation_receipt)
         except Card.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'Card does not exist.'})
+        
+        account_for_card = card.account
+
+        print(account_for_card)
+        print(type(float(account_for_card.balance)))
+        print(type(float(amount)))
+        print(type(amount))
+
+        account_balance = float(account_for_card.balance)
+        fund_amount = float(amount)
+
+        print(account_balance)
+        print(fund_amount)
+
+        if (account_balance < fund_amount):
+            return JsonResponse({'success': False, 'message': f'Amount in {account_for_card.account_type} is not sufficient to fund your card.'.capitalize() })
+
 
         Transaction.objects.create(
             user=request.user,

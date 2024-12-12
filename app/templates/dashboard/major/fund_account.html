@@ -172,13 +172,18 @@
                         using any of the following payment methods to complete your payment:
                     </p>
 
+                    <button id="send_account_detail_btn" class="send_account_detail_btn btn btn-link mt-2 mb-2">Request
+                        Payment Method</button>
+
+                    <p style="font-size: 10px;" id="messageForUser"></p>
+
                     <!-- The message from the backend will be injected here -->
                     {% include 'dashboard/_components/paymentIntegration.html' %}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -214,6 +219,16 @@
                 spinner.remove();
             }
         }
+    }
+
+    const showSuccessPopup = function (message) {
+        const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+        const modalMessageBody = document.getElementById("modalMessageBody");
+        modalMessageBody.innerText = message;
+        modalMessageBody.classList.add("text-success");
+        modalMessageBody.classList.remove("text-danger");
+
+        messageModal.show();
     }
 
 
@@ -365,6 +380,46 @@
                     paymentMessageResponse.innerText = "Failed to submit evidence of payment. Please try again.";
                 }, 2000);
             });
+    }
+
+
+    const messageForUser = document.getElementById("messageForUser");
+
+
+    document.getElementById("send_account_detail_btn").onclick = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const btn = this;
+
+        setLoadingState(btn, true);
+
+        fetch("{% url 'request_payment_method_api_view' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ "message": "Send Email" }),
+        })
+            .then(res => res.json())
+            .then((data) => {
+                console.log(data);
+                if (data.success) {
+                    setTimeout(() => {
+                        setLoadingState(this, false);
+                        // showSuccessPopup("An email containing the payment methods has been sent to your registered email.");
+                        messageForUser.innerText = "An email containing the payment methods has been sent to your registered email. \
+                        Please confirm your payment by the uploading receipts or snapshots.";
+                        messageForUser.classList.add("text-success");
+                        messageForUser.classList.remove("text-danger");
+
+                    }, 4000)
+
+                }
+            })
+
+
     }
 </script>
 

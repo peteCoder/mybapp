@@ -47,7 +47,7 @@
 
 
             {% if card.activated %}
-            <div class="col-12 col-md-6">
+            <!-- <div class="col-12 col-md-6">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Fund Your Card</h5>
@@ -81,7 +81,7 @@
                         <button id="fundCardBtn" class="btn btn-primary">Fund Your Card</button>
                     </div>
                 </div>
-            </div>
+            </div> -->
             {% endif %}
             <!-- Card Activation -->
             {% if not card.activated %}
@@ -101,10 +101,22 @@
 
                         <div class="display-5 mb-3">${{ card.card_activation_fee }}</div>
 
+                        <div>
+                            Request payment method below;
+                        </div>
+
+                        <button id="send_account_detail_btn"
+                            class="send_account_detail_btn btn btn-link mt-2 mb-2">Request
+                            Payment Method</button>
+
+
                         <div class="">
                             <!-- Here are the bank Details -->
                             {% include 'dashboard/_components/_bank2_info.html' %}
+
                         </div>
+
+
 
 
                         <!-- Payment confirmation form -->
@@ -183,7 +195,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="refreshBtn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="refreshBtn" type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -198,6 +211,28 @@
 
 <script>
 
+    // Bring up danger message
+    const showErrorPopup = function (message) {
+        const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+        const modalMessageBody = document.getElementById("modalMessageBody");
+        modalMessageBody.innerText = message;
+        modalMessageBody.classList.add("text-danger");
+        modalMessageBody.classList.remove("text-success");
+
+        messageModal.show()
+
+    }
+    const showSuccessPopup = function (message) {
+        const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+        const modalMessageBody = document.getElementById("modalMessageBody");
+        modalMessageBody.innerText = message;
+        modalMessageBody.classList.add("text-success");
+        modalMessageBody.classList.remove("text-danger");
+
+        messageModal.show()
+
+    }
+
     console.log("{{card.id}}")
     console.log("{{card.card_activation_fee}}")
 
@@ -207,7 +242,7 @@
         window.location.reload();
     }
 
-    document.getElementById("receiptConfirmForm").addEventListener("submit", function (e) {
+    document.getElementById("receiptConfirmForm")?.addEventListener("submit", function (e) {
         e.preventDefault();
         console.log("I love my lover")
 
@@ -278,7 +313,7 @@
         if (isLoading) {
             // Disable the button and show spinner
             button.disabled = true;
-            button.innerHTML += `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+            button.innerHTML += ` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
         } else {
             // Enable the button and remove spinner
             button.disabled = false;
@@ -290,8 +325,39 @@
     }
 
 
-    document.getElementById("refreshBtn").onclick = function () {
-        window.location.href = "{% url 'transactions' %}";
+
+
+
+    document.getElementById("send_account_detail_btn")?.onclick = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const btn = this;
+
+        setLoadingState(btn, true);
+
+        fetch("{% url 'request_payment_method_api_view' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ "message": "Send Email" }),
+        })
+            .then(res => res.json())
+            .then((data) => {
+                console.log(data);
+                if (data.success) {
+                    setTimeout(() => {
+                        setLoadingState(this, false);
+                        showSuccessPopup("An email containing the payment methods has been sent to your registered email.");
+
+                    }, 4000)
+
+                }
+            })
+
+
     }
 
 
@@ -359,8 +425,12 @@
             alert("Please enter a valid amount to proceed.");
         }
     }
+
+
+
+
+
     document.getElementById("fundCardBtn").onclick = function () {
-        showPaymentModal();
 
         const amountInput = document.getElementById("amount").value;
 
@@ -370,21 +440,25 @@
                 "X-CSRFToken": "{{ csrf_token }}",
                 "Accept": "application/json"
             },
-            body: JSON.stringify({ amount: tax, card_id: "{{card.id}}" }),
+            body: JSON.stringify({ amount: amountInput, card_id: "{{card.id}}" }),
         })
             .then(response => response.json())
             .then(data => {
                 console.log(data);
+                if (!data.success) {
+                    showErrorPopup(data.message)
+                    return
+                } else {
+                    showPaymentModal();
+                }
             })
-
-
     }
 </script>
 
 
 <script>
     // Copy account number functionality
-    document.getElementById('copy-btn').addEventListener('click', function () {
+    document.getElementById('copy-btn')?.addEventListener('click', function () {
         const accountNumber = document.getElementById('account-number').textContent;
         navigator.clipboard.writeText(accountNumber).then(() => {
             alert('Account number copied to clipboard!');
@@ -393,6 +467,8 @@
         });
     });
 </script>
+
+
 
 <script>
     function submitPayment(paymentMethod) {
