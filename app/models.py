@@ -419,9 +419,9 @@ class Card(models.Model):
     @property
     def card_image(self):
         if self.card_type == 'MasterCard':
-            return "https://res.cloudinary.com/daf9tr3lf/image/upload/v1733837782/master_jcdqqw.png"
+            return "https://www.mastercard.us/content/dam/public/mastercardcom/na/us/en/homepage/Home/mc-logo-52.svg"
         elif self.card_type == 'Visa':
-            return "https://res.cloudinary.com/daf9tr3lf/image/upload/v1733837753/visa_w8ysw6.png"
+            return "https://www.pikpng.com/pngl/b/494-4943838_mastercard-clipart-discover-card-visa-logo-on-credit.png"
         elif self.card_type == 'Verve':
             return "https://res.cloudinary.com/daf9tr3lf/image/upload/v1733837782/master_jcdqqw.png"
         else:

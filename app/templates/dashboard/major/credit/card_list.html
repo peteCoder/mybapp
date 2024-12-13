@@ -1,96 +1,192 @@
 {% extends 'dashboard_base.html' %}
 {% load static %}
 
+
+{% block style %}
+
+<link rel="stylesheet" href="{% static 'css/card.css' %}">
+
+{% endblock %}
+
 {% block content %}
 
-<main class="content">
+
+
+<main class="p-3 content">
+
     <div class="container-fluid p-0">
-        <h1 class="h3 mb-3"><strong>Credit Cards</strong></h1>
+        <h1 class="h3 mb-3"><strong>Debit Cards</strong></h1>
 
         <div class="d-flex justify-content-between align-items-center flex-wrap mb-5 mt-5">
             {% if not card_count > 3 %}
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <a href="{% url 'create_credit_card' %}" class="btn-primary btn">Apply for Credit Card</a>
-                <a href="{% url 'connect_credit_card' %}" class="btn-primary btn">Connect an Existing Credit Card</a>
+                <a href="{% url 'create_debit_card' %}" class="btn-primary btn">Create Debit Card</a>
+                <a href="{% url 'connect_debit_card' %}" class="btn-primary btn">Connect Existing Debit Card</a>
             </div>
 
             {% endif %}
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Card Type</th>
-                                        <th>Card Number</th>
-                                        <th>CVV</th>
-                                        <th>Exp. Date</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for card in cards %}
-                                    <tr>
-                                        <td>
-                                            <a href="{% url 'credit_card_detail' card.id %}">{{ card.card_type }}</a>
-                                        </td>
-                                        <td>
-                                            {% if card.activated %}
-                                            {{ card.card_number }}
-                                            {% else %}
-                                            **********
-                                            {% endif %}
-                                        </td>
-                                        <td>{% if card.activated %} {{ card.cvv }} {% else %} *** {% endif %}</td>
-                                        <td>
-                                            {% if card.card_expiration %}
-                                            <span class="">
 
-                                                <span class="exp-date">
-                                                    {{ card.card_expiration }}
-                                                </span>
-                                            </span>
-                                            {% else %}
-                                            <span class="">
+        <!-- Here -->
+        <div class="d-flex flex-wrap gap-2">
 
-                                                <span class="exp-date" data-date="{{ card.expiration_date }}">
-                                                    {{ card.expiration_date }}
-                                                </span>
-                                            </span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <span class="">
-                                                {% if card.activated %}
-                                                <span class="badge bg-success">Active</span>
-                                                {% else %}
-                                                <span class="badge bg-danger">Inactive</span>
-                                                {% endif %}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    {% empty %}
-                                    <tr>
-                                        <td colspan="4" class="text-center">No available Cards</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+            {% for card in cards %}
+            <div class="bank__card"
+                style="background-image: url('{% static 'images/firstcitizenbg-background.jpg' %}');">
+                <p class="name__of__bank">FirstCitizen Bank</p>
+                <p>{{card.card_category}}</p>
+                <p class="card__number">
+                    {% if card.activated %}
+                    {{ card.card_number }}
+                    {% else %}
+                    **********
+                    {% endif %}
+                </p>
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <p class="user_name">{{user.first_name}} {{user.last_name}}</p>
+                    <p class="expiration_date">
+
+
+                        {% if not card.activated %}
+                        ****
+                        {% else %}
+
+                        {% if card.card_expiration %}
+                        <span class="">
+
+                            <span class="exp-date">
+                                {{ card.card_expiration }}
+                            </span>
+                        </span>
+                        {% else %}
+                        <span class="">
+
+                            <span class="exp-date" data-date="{{ card.expiration_date }}">
+                                {{ card.expiration_date }}
+                            </span>
+                        </span>
+                        {% endif %}
+                        {% endif %}
+                    </p>
+
+
+                </div>
+
+
+
+                <div class="card__overlay">
+                    <!-- <button class="btn btn-primary overlay__btn">View Details</button> -->
+                    {% if card.activated %}
+                    <button class="btn btn-primary overlay__btn" data-bs-toggle="modal"
+                        data-bs-target="#cardDetailsModal" data-card="{{ card.id }}"
+                        data-number="{% if card.activated %} {{ card.card_number }} {% else %} ********** {% endif %}"
+                        data-type="{{ card.card_type }}"
+                        data-exp="{% if card.card_expiration %} {{ card.card_expiration }} {% else %}  {{ card.expiration_date }} {% endif %}"
+                        data-cvv="{% if card.activated %}{{ card.cvv }}{% else %}***{% endif %}"
+                        data-status="{% if card.activated %}Active{% else %}Inactive{% endif %}">
+                        View Details
+                    </button>
+                    {% else %}
+
+                    <a class="btn btn-primary overlay__btn" href="{% url 'credit_card_detail' card.id %}">Activate
+                        Card</a>
+                    {% endif %}
+                </div>
+
+
+
+                <span class="card__status">
+                    {% if card.activated %}
+                    <span class="badge bg-success">Active</span>
+                    {% else %}
+                    <span class="badge bg-danger">Inactive</span>
+                    {% endif %}
+                </span>
+
+                <div style="justify-self: flex-end;" class=""
+                    style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <img width="30" src="{{ card.card_image }}" alt="Logo">
+                    <span>{{card.card_type}}</span>
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="cardDetailsModal" tabindex="-1" aria-labelledby="cardDetailsModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cardDetailsModalLabel">Card Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Card Details in Grid Format -->
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-6"><strong>Card Type:</strong></div>
+                            <div class="col-6" id="modal-card-type"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6"><strong>Card Number:</strong></div>
+                            <div class="col-6" id="modal-card-number"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6"><strong>CVV:</strong></div>
+                            <div class="col-6" id="modal-card-cvv"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6"><strong>Expiration Date:</strong></div>
+                            <div class="col-6" id="modal-card-expiration"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6"><strong>Status:</strong></div>
+                            <div class="col-6" id="modal-card-status"></div>
                         </div>
                     </div>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
-    </div>
+
+
 </main>
 
 {% endblock %}
 
 {% block script %}
+
+
+<script>
+    // JavaScript to populate the modal with card details
+    const cardDetailsModal = document.getElementById('cardDetailsModal');
+    cardDetailsModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget; // Button that triggered the modal
+
+        // Extract data from data-* attributes
+        const cardType = button.getAttribute('data-type');
+        const cardNumber = button.getAttribute('data-number');
+        const cardCvv = button.getAttribute('data-cvv');
+        const cardExp = button.getAttribute('data-exp');
+        const cardStatus = button.getAttribute('data-status');
+
+        // Update modal content
+        document.getElementById('modal-card-type').textContent = cardType;
+        document.getElementById('modal-card-number').textContent = cardNumber;
+        document.getElementById('modal-card-cvv').textContent = cardCvv;
+        document.getElementById('modal-card-expiration').textContent = cardExp;
+        document.getElementById('modal-card-status').textContent = cardStatus;
+    });
+</script>
 
 <script>
     // Function to convert "Oct. 20, 2028" to "MM/YY" format

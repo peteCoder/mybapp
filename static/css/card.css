@@ -1,0 +1,78 @@
+.bank__card {
+    min-height: 170px;
+    width: 300px;
+    background-repeat: no-repeat;
+    background-attachment: local;
+    background-size: cover;
+    background-position: right center;
+    border-radius: 10px;
+    padding: 10px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+
+}
+
+
+
+.bank__card p {
+    color: white;
+    margin-bottom: 0;
+}
+
+.name__of__bank {
+    font-weight: 900;
+}
+
+.card__status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+.card__overlay {
+    position: absolute;
+    background-color: rgba(12, 94, 216, 0.753);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 20;
+    transition: .5s ease-in-out;
+}
+
+.bank__card:hover .card__overlay {
+    opacity: 0.9;
+    visibility: visible;
+}
+
+.overlay__btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 30;
+    opacity: 0;
+    visibility: hidden;
+
+}
+
+.bank__card:hover .overlay__btn {
+    opacity: 1;
+    visibility: visible;
+}
+
+.user_name {}
+
+.expiration_date {}
+
+.card__number {}
