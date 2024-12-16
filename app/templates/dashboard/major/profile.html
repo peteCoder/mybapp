@@ -7,10 +7,8 @@
 </div>
 
 <main class="content">
-    <div class="container-fluid p-0" style="max-width: 700px; margin: 20px auto;">
+    <div class="container-fluid p-0" style="max-width: 700px; margin: 20px 0;">
         <h1 class="h3 mb-5"><strong>Profile</strong> Settings</h1>
-
-
 
         <div class="modal fade" id="updatePasswordModal" tabindex="-1" aria-labelledby="updatePasswordModalLabel"
             aria-hidden="true">
@@ -78,10 +76,7 @@
                 <label for="email" class="form-label">Email address</label>
                 <input type="email" value="{{user.email}}" class="form-control" disabled id="email" name="email">
             </div>
-            <!-- <div class="mb-3">
-                <label for="ssn" class="form-label">SSN</label>
-                <input type="ssn" value="{{user.ssn}}" class="form-control" id="ssn" name="ssn">
-            </div> -->
+
             <div class="mb-3">
                 <label for="city" class="form-label">City</label>
                 <input type="city" value="{{user.city}}" class="form-control" id="city" name="city">

@@ -52,14 +52,18 @@
                 </div> -->
             </li>
 
-            <li class="nav-item dropdown">
+            <li class="nav-item dropdown d-flex align-items-center">
                 <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
                     <i class="align-middle" data-feather="settings"></i>
                 </a>
 
-                <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
-                    <img src="{{user.get_profile_image_url}}" class="avatar img-fluid rounded me-1"
-                        alt="{{user.get_user_fullname}}" /> <span class="text-dark">{{ user.get_user_fullname }}</span>
+                <a class="nav-link dropdown-toggle d-sm-inline-block" href="#" data-bs-toggle="dropdown">
+                    <img src="{{user.get_profile_image_url}}" id="profileImageNav"
+                        style="border-radius: 50%; border: 2px solid #222296;" class="avatar me-1"
+                        alt="{{user.get_user_fullname}}" />
+                    <span class="text-dark d-none d-sm-inline">
+                        {{ user.get_user_fullname }}
+                    </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end">
                     <a class="dropdown-item" href="{% url 'profile' %}"><i class="align-middle me-1"
@@ -79,3 +83,13 @@
         </ul>
     </div>
 </nav>
+
+
+
+<script>
+    const pathname = location.pathname;
+
+    if (pathname === "/dashboard/") {
+        document.getElementById("profileImageNav").style.display = "none";
+    }
+</script>
