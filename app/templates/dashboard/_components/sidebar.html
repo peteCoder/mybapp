@@ -1,6 +1,14 @@
+{% load static %}
+
+
+
 <nav id="sidebar" class="sidebar js-sidebar bg-primary">
     <div class="sidebar-content js-simplebar bg-bank-primary pb-5">
         <a class="sidebar-brand" href="{% url 'dashboard_home' %}">
+            <img width="35" class="fcb-image__image" src="{% static 'images/image.20240613.png' %}"
+                srcset="{% static 'images/image.20240613_1.png 2x' %}, {% static 'images/image.20240613.png 1x' %}"
+                alt="First Citizens Bank Logo" data-trackable="true"
+                data-asset-id="dc55e3cd-91af-480a-b6da-ccc2cb83406d" loading="lazy" tabindex="0">
             <span class="align-middle">FirstCitizen Bank</span>
         </a>
 

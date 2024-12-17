@@ -47,7 +47,7 @@
 
 
             {% if card.activated %}
-            <!-- <div class="col-12 col-md-6">
+            <div class="col-12 col-md-6">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Fund Your Card</h5>
@@ -81,7 +81,7 @@
                         <button id="fundCardBtn" class="btn btn-primary">Fund Your Card</button>
                     </div>
                 </div>
-            </div> -->
+            </div>
             {% endif %}
             <!-- Card Activation -->
             {% if not card.activated %}
@@ -101,20 +101,20 @@
 
                         <div class="display-5 mb-3">${{ card.card_activation_fee }}</div>
 
-                        <div>
+                        <!-- <div>
                             Request payment method below;
-                        </div>
+                        </div> -->
 
-                        <button id="send_account_detail_btn"
+                        <!-- <button id="send_account_detail_btn"
                             class="send_account_detail_btn btn btn-link mt-2 mb-2">Request
-                            Payment Method</button>
+                            Payment Method</button> -->
+
+                        <p>For assistance, please reach out to us via our live chat below or email us at
+                            <a href="mailto:support@fcb.com"> support@fcb.com</a>
+                        </p>
 
 
-                        <div class="">
-                            <!-- Here are the bank Details -->
-                            {% include 'dashboard/_components/_bank2_info.html' %}
 
-                        </div>
 
 
 
@@ -242,13 +242,14 @@
         window.location.reload();
     }
 
+    // receiptConfirmForm
+
     document.getElementById("receiptConfirmForm")?.addEventListener("submit", function (e) {
         e.preventDefault();
-        console.log("I love my lover")
 
         const formData = new FormData();
         const receipt = document.getElementById('receipt').files[0];
-        const paymentMethod = document.getElementById('paymentMethod').value;
+        // const paymentMethod = document.getElementById('paymentMethod').value;
         const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
         const modalMessageBody = document.getElementById('modalMessageBody');
 
@@ -259,7 +260,7 @@
         }
 
         formData.append('receipt', receipt);
-        formData.append('paymentMethod', paymentMethod);
+        // formData.append('paymentMethod', paymentMethod);
 
         // // Show loading spinner
         // document.getElementById("loading-spinner").classList.remove("d-none");
@@ -328,37 +329,37 @@
 
 
 
-    document.getElementById("send_account_detail_btn")?.onclick = function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+    // document.getElementById("send_account_detail_btn")?.onclick = function (e) {
+    //     e.preventDefault();
+    //     e.stopPropagation();
 
-        const btn = this;
+    //     const btn = this;
 
-        setLoadingState(btn, true);
+    //     setLoadingState(btn, true);
 
-        fetch("{% url 'request_payment_method_api_view' %}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-            body: JSON.stringify({ "message": "Send Email" }),
-        })
-            .then(res => res.json())
-            .then((data) => {
-                console.log(data);
-                if (data.success) {
-                    setTimeout(() => {
-                        setLoadingState(this, false);
-                        showSuccessPopup("An email containing the payment methods has been sent to your registered email.");
+    //     fetch("{% url 'request_payment_method_api_view' %}", {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             'X-CSRFToken': '{{ csrf_token }}',
+    //         },
+    //         body: JSON.stringify({ "message": "Send Email" }),
+    //     })
+    //         .then(res => res.json())
+    //         .then((data) => {
+    //             console.log(data);
+    //             if (data.success) {
+    //                 setTimeout(() => {
+    //                     setLoadingState(this, false);
+    //                     showSuccessPopup("An email containing the payment methods has been sent to your registered email.");
 
-                    }, 4000)
+    //                 }, 4000)
 
-                }
-            })
+    //             }
+    //         })
 
 
-    }
+    // }
 
 
     document.getElementById("requestForPaymentMethodFromRealPayment").onclick = function (e) {

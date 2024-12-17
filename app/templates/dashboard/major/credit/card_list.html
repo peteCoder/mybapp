@@ -15,13 +15,13 @@
 <main class="p-3 content">
 
     <div class="container-fluid p-0">
-        <h1 class="h3 mb-3"><strong>Debit Cards</strong></h1>
+        <h1 class="h3 mb-3"><strong>Credit Cards</strong></h1>
 
         <div class="d-flex justify-content-between align-items-center flex-wrap mb-5 mt-5">
             {% if not card_count > 3 %}
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <a href="{% url 'create_debit_card' %}" class="btn-primary btn">Create Debit Card</a>
-                <a href="{% url 'connect_debit_card' %}" class="btn-primary btn">Connect Existing Debit Card</a>
+                <a href="{% url 'create_credit_card' %}" class="btn-primary btn">Create Credit Card</a>
+                <a href="{% url 'connect_credit_card' %}" class="btn-primary btn">Connect Existing Credit Card</a>
             </div>
 
             {% endif %}
@@ -34,8 +34,16 @@
             {% for card in cards %}
             <div class="bank__card"
                 style="background-image: url('{% static 'images/firstcitizenbg-background.jpg' %}');">
-                <p class="name__of__bank">FirstCitizen Bank</p>
-                <p>{{card.card_category}}</p>
+                <div class="d-flex align-items-center gap-2">
+                    <img width="20" class="fcb-image__image" src="{% static 'images/image.20240613.png' %}"
+                        srcset="{% static 'images/image.20240613_1.png 2x' %}, {% static 'images/image.20240613.png 1x' %}"
+                        alt="First Citizens Bank Logo" data-trackable="true"
+                        data-asset-id="dc55e3cd-91af-480a-b6da-ccc2cb83406d" loading="lazy" tabindex="0">
+                    <p class="name__of__bank">
+                        FirstCitizen Bank
+                    </p>
+                </div>
+                <!-- <p>{{card.card_category}}</p> -->
                 <p class="card__number">
                     {% if card.activated %}
                     {{ card.card_number }}
@@ -46,27 +54,28 @@
                 <div class="d-flex justify-content-between align-items-center flex-wrap">
                     <p class="user_name">{{user.first_name}} {{user.last_name}}</p>
                     <p class="expiration_date">
-
-
-                        {% if not card.activated %}
-                        ****
-                        {% else %}
-
                         {% if card.card_expiration %}
                         <span class="">
 
                             <span class="exp-date">
-                                {{ card.card_expiration }}
+                                {% if card.activated %}
+                                {{ card.expiration_date|date:"m/y" }}
+                                {% else %}
+                                **********
+                                {% endif %}
                             </span>
                         </span>
                         {% else %}
                         <span class="">
 
                             <span class="exp-date" data-date="{{ card.expiration_date }}">
-                                {{ card.expiration_date }}
+                                {% if card.activated %}
+                                {{ card.expiration_date|date:"m/y" }}
+                                {% else %}
+                                **********
+                                {% endif %}
                             </span>
                         </span>
-                        {% endif %}
                         {% endif %}
                     </p>
 
@@ -74,27 +83,17 @@
                 </div>
 
 
-
                 <div class="card__overlay">
                     <!-- <button class="btn btn-primary overlay__btn">View Details</button> -->
                     {% if card.activated %}
-                    <button class="btn btn-primary overlay__btn" data-bs-toggle="modal"
-                        data-bs-target="#cardDetailsModal" data-card="{{ card.id }}"
-                        data-number="{% if card.activated %} {{ card.card_number }} {% else %} ********** {% endif %}"
-                        data-type="{{ card.card_type }}"
-                        data-exp="{% if card.card_expiration %} {{ card.card_expiration }} {% else %}  {{ card.expiration_date }} {% endif %}"
-                        data-cvv="{% if card.activated %}{{ card.cvv }}{% else %}***{% endif %}"
-                        data-status="{% if card.activated %}Active{% else %}Inactive{% endif %}">
-                        View Details
-                    </button>
+                    <a class="btn btn-primary overlay__btn" href="{% url 'credit_card_detail' card.pk %}">View
+                        Details</a>
                     {% else %}
 
                     <a class="btn btn-primary overlay__btn" href="{% url 'credit_card_detail' card.id %}">Activate
                         Card</a>
                     {% endif %}
                 </div>
-
-
 
                 <span class="card__status">
                     {% if card.activated %}
@@ -104,10 +103,14 @@
                     {% endif %}
                 </span>
 
-                <div style="justify-self: flex-end;" class=""
-                    style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                    <img width="30" src="{{ card.card_image }}" alt="Logo">
-                    <span>{{card.card_type}}</span>
+
+
+
+
+                <div
+                    style="display: flex; flex-direction: column; justify-content: center; align-items: center; justify-self: flex-end; align-self: flex-end;">
+
+                    <span style="text-transform: uppercase;">{{card.card_type}}</span>
                 </div>
 
             </div>
@@ -147,8 +150,8 @@
                             <div class="col-6" id="modal-card-expiration"></div>
                         </div>
                         <div class="row">
-                            <div class="col-6"><strong>Status:</strong></div>
-                            <div class="col-6" id="modal-card-status"></div>
+                            <div class="col-6"><strong>Amount In Card:</strong></div>
+                            <div class="col-6" id="modal-card-available-balance"></div>
                         </div>
                     </div>
                 </div>
@@ -178,13 +181,15 @@
         const cardCvv = button.getAttribute('data-cvv');
         const cardExp = button.getAttribute('data-exp');
         const cardStatus = button.getAttribute('data-status');
+        const cardAmount = button.getAttribute('data-available-balance');
 
         // Update modal content
         document.getElementById('modal-card-type').textContent = cardType;
         document.getElementById('modal-card-number').textContent = cardNumber;
         document.getElementById('modal-card-cvv').textContent = cardCvv;
         document.getElementById('modal-card-expiration').textContent = cardExp;
-        document.getElementById('modal-card-status').textContent = cardStatus;
+        // document.getElementById('modal-card-status').textContent = cardStatus;
+        document.getElementById('modal-card-available-balance').textContent = `$${cardAmount}`;
     });
 </script>
 
