@@ -1,9 +1,17 @@
 {% extends 'dashboard_base.html' %}
 {% load static %}
 
+
 {% block style %}
 
 <link rel="stylesheet" href="{% static 'css/card.css' %}">
+
+<style>
+
+    .no-wrap {
+        white-space: nowrap;
+    }
+    </style>
 
 {% endblock %}
 
@@ -19,7 +27,7 @@
                     style="text-transform: capitalize;">{{user.first_name}}.</span></b> </h1>
         {% if user.get_profile_image_url %}
         <a href="{% url 'profile' %}" class="d-inline-block">
-            <img src="{{user.get_profile_image_url}}" style="border-radius: 50%; border: 2px solid #222296;"
+            <img src="{{user.get_profile_image_url}}" style="border-radius: 50%; object-fit: cover; border: 2px solid #222296;"
                 class="avatar me-1" alt="{{user.get_user_fullname}}" />
         </a>
         {% endif %}
@@ -367,21 +375,26 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Description</th>
-                                    <th>Account</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
+                                    <th class="no-wrap">Date</th>
+                                    <th class="no-wrap">Description</th>
+                                    <th class="no-wrap">Account</th>
+                                    <th class="no-wrap">Amount</th>
+                                    <th class="no-wrap">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for transaction in transactions %}
                                 <tr>
-                                    <td>{{ transaction.timestamp }}</td>
-                                    <td>{{ transaction.transaction_type }}</td>
-                                    <td>{{transaction.from_account.account_type}}</td>
-                                    <td>${{ transaction.amount }}</td>
-                                    <td>
+                                    <!-- <td>{{ transaction.timestamp|date:"M. d" }}</td> -->
+                                    <td class="no-wrap">{{ transaction.timestamp|date:"M. d" }}</td>
+                                    <td class="no-wrap">{{ transaction.transaction_type }}</td>
+                                    <td class="no-wrap">{% if transaction.from_account.account_type %}
+                                        {{transaction.from_account.account_type}}
+                                        {% else %}
+                                        ----
+                                        {% endif %}</td>
+                                    <td class="no-wrap">${{ transaction.amount }}</td>
+                                    <td class="no-wrap">
                                         <span
                                             class="badge {% if not transaction.status == 'Pending' %} bg-success {% else %} bg-danger {% endif %}">
                                             {{ transaction.status|capfirst }}

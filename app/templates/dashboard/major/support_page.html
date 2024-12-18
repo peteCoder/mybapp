@@ -1,6 +1,15 @@
 {% extends 'dashboard_base.html' %}
 {% load static %}
 
+{% block style %}
+<style>
+
+.no-wrap {
+    white-space: nowrap;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <main class="content">
     <div class="container-fluid p-0">
@@ -48,35 +57,37 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Previous Support Requests</h5>
-                        <table class="table table-responsive">
+                        <div class="table-responsive">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Subject</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Date Submitted</th>
+                                    <th class="no-wrap" scope="col">#</th>
+                                    <th class="no-wrap" scope="col">Subject</th>
+                                    <th class="no-wrap" scope="col">Status</th>
+                                    <th class="no-wrap" scope="col">Date Submitted</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for request in supports %}
                                 <tr>
-                                    <th scope="row">{{ forloop.counter }}</th>
-                                    <td>{{ request.subject }}</td>
-                                    <td>
+                                    <th scope="row" class="no-wrap">{{ forloop.counter }}</th>
+                                    <td class="no-wrap">{{ request.subject }}</td>
+                                    <td class="no-wrap">
                                         <span
                                             class="badge {% if request.status == 'Pending' %} bg-warning {% elif request.status == 'Fulfilled' %} bg-success {% endif %}">
                                             {{request.status }}
                                         </span>
                                     </td>
-                                    <td>{{ request.created_at }}</td>
+                                    <td class="no-wrap">{{ request.created_at|date:"M. d" }}</td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="4" class="text-center">No support requests submitted yet.</td>
+                                    <td class="no-wrap" colspan="4" class="text-center">No support requests submitted yet.</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
+                    </div>
                     </div>
                 </div>
             </div>

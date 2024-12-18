@@ -421,7 +421,8 @@ class Card(models.Model):
         if self.card_type == 'MasterCard':
             return "https://www.mastercard.us/content/dam/public/mastercardcom/na/us/en/homepage/Home/mc-logo-52.svg"
         elif self.card_type == 'Visa':
-            return "https://www.pikpng.com/pngl/b/494-4943838_mastercard-clipart-discover-card-visa-logo-on-credit.png"
+            # return "https://www.pikpng.com/pngl/b/494-4943838_mastercard-clipart-discover-card-visa-logo-on-credit.png"
+            return "https://www.pikpng.com/pngl/b/81-810129_visa-la-perle-visa-card-logo-white-clipart.png"
         elif self.card_type == 'Verve':
             return "https://res.cloudinary.com/daf9tr3lf/image/upload/v1733837782/master_jcdqqw.png"
         else:

@@ -383,7 +383,6 @@ def final_process_transfer(request):
 
 @csrf_exempt
 def resend_otp_code(request):
-    
     try:
         transaction_type = json.loads(request.body)['transaction_type']
         print("Transaction Type: ", transaction_type)
@@ -726,7 +725,8 @@ def account_details(request, pk):
     except Account.DoesNotExist:
         raise Http404
     
-    transactions = Transaction.objects.filter(from_account=account, user=user)
+    transactions = Transaction.objects.filter(from_account=account, user=user).order_by("-pk")[0:10]
+    
 
     return render(
         request, 
@@ -1103,13 +1103,8 @@ def connect_debit_card(request):
 @login_required
 def settings(request):
 
-    # inactive_redirect = go_to_inactive_state(request)
-    # if inactive_redirect:
-    #     return inactive_redirect  # Return the redirect response
-
-
-
-    transactions = Transaction.objects.filter(user=request.user)
+    
+    transactions = Transaction.objects.filter(user=request.user).order_by("-pk")[0:10]
 
     return render(request, 'dashboard/major/account_settings.html', {"transactions": transactions})
 

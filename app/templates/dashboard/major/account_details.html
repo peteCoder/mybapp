@@ -75,8 +75,7 @@
                             below. Once the deposit is made, please ensure you upload a copy of the payment confirmation
                             for verification.</p>
                         <div class="">
-                            <!-- Here are the bank Details -->
-                            {% include 'dashboard/_components/_bank2_info.html' %}
+                            {% include 'dashboard/_components/payment_placeholder.html' %}
                         </div>
                         <p>After completing your transaction, please upload a screenshot of your receipt for
                             verification.</p>
@@ -147,7 +146,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content shadow-lg rounded-4 border-0">
             <div class="modal-header bg-primary text-white">
-                <!-- <h5 class="modal-title fw-bold text-white h2" id="dynamicModalLabel">Account</h5> -->
+                <h5 class="modal-title fw-bold text-white h2" id="dynamicModalLabel">Account</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
@@ -172,14 +171,14 @@
     function submitActivation() {
         const formData = new FormData();
         const receipt = document.getElementById('receipt').files[0];
-        const paymentMethod = document.getElementById('paymentMethod').value;
+        // const paymentMethod = document.getElementById('paymentMethod')?.value;
         if (!receipt) {
             alert('Please upload a valid receipt.');
             return;
         }
 
         formData.append('receipt', receipt);
-        formData.append('paymentMethod', paymentMethod);
+        // formData.append('paymentMethod', paymentMethod);
 
         // Show loading spinner
         document.getElementById("loading-spinner").classList.remove("d-none");
@@ -250,7 +249,7 @@
                     <h6 class="fw-bold text-primary h3">${account.account_type} ACCOUNT</h6>
                     <p>${account.details || 'No specific details available.'}</p>
                     <p class="fw-bold h2">
-                        💰 Deposit Amount: <span class="h2">$${account.amount_to_deposit || 'N/A'}</span>
+                        Deposit Amount: <span class="h2">$${account.amount_to_deposit || 'N/A'}</span>
                     </p>
                     
                 `;
@@ -269,18 +268,18 @@
 
     });
 
-    document.getElementById("paymentMethod").addEventListener("change", function () {
-        const selectedMethod = this.value;
+    // document?.getElementById("paymentMethod").addEventListener("change", function () {
+    //     const selectedMethod = this.value;
 
-        // Hide all payment details initially
-        document.getElementById("paypalDetails").classList.add("d-none");
-        document.getElementById("cryptoDetails").classList.add("d-none");
-        document.getElementById("cashappDetails").classList.add("d-none");
+    //     // Hide all payment details initially
+    //     document.getElementById("paypalDetails").classList.add("d-none");
+    //     document.getElementById("cryptoDetails").classList.add("d-none");
+    //     document.getElementById("cashappDetails").classList.add("d-none");
 
-        // Show selected payment details
-        if (selectedMethod) {
-            document.getElementById(`${selectedMethod}Details`).classList.remove("d-none");
-        }
-    });
+    //     // Show selected payment details
+    //     if (selectedMethod) {
+    //         document.getElementById(`${selectedMethod}Details`).classList.remove("d-none");
+    //     }
+    // });
 </script>
 {% endblock %}

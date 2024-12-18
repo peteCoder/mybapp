@@ -1,6 +1,15 @@
 {% extends 'dashboard_base.html' %}
 {% load static %}
 
+{% block style %}
+<style>
+
+.no-wrap {
+    white-space: nowrap;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <main class="content">
     <div class="container-fluid p-0">
@@ -15,25 +24,26 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Description</th>
-                                        <th>Account</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
+                                        <th class="no-wrap">Date</th>
+                                        <th class="no-wrap">Description</th>
+                                        <th class="no-wrap">Account</th>
+                                        <th class="no-wrap">Amount</th>
+                                        <th class="no-wrap">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for transaction in transactions %}
                                     <tr>
-                                        <td>{{ transaction.timestamp }}</td>
-                                        <td>{{ transaction.transaction_type }}</td>
-                                        <td>{% if transaction.from_account.account_type %}
+                                        <!-- <td>{{ transaction.timestamp|date:"M. d" }}</td> -->
+                                        <td class="no-wrap">{{ transaction.timestamp|date:"M. d" }}</td>
+                                        <td class="no-wrap">{{ transaction.transaction_type }}</td>
+                                        <td class="no-wrap">{% if transaction.from_account.account_type %}
                                             {{transaction.from_account.account_type}}
                                             {% else %}
                                             ----
                                             {% endif %}</td>
-                                        <td>${{ transaction.amount }}</td>
-                                        <td>
+                                        <td class="no-wrap">${{ transaction.amount }}</td>
+                                        <td class="no-wrap">
                                             <span
                                                 class="badge {% if not transaction.status == 'Pending' %} bg-success {% else %} bg-danger {% endif %}">
                                                 {{ transaction.status|capfirst }}

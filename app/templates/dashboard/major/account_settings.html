@@ -1,6 +1,18 @@
 {% extends 'dashboard_base.html' %}
 {% load static %}
 
+{% block style %}
+
+
+<style>
+
+    .no-wrap {
+        white-space: nowrap;
+    }
+    </style>
+
+{% endblock %}
+
 {% block content %}
 <main class="content">
     <div class="container-fluid p-0">
@@ -12,10 +24,10 @@
                 <div class="card">
                     <div class="card-body text-center">
                         <img src="{{ user.get_profile_image_url }}"
-                            style="width: 90px; height: 90px; border-radius: 50%; margin-bottom: 15px;"
+                            style="width: 90px; height: 90px; border: 2px solid #222296; object-fit: cover; border-radius: 50%; margin-bottom: 15px;"
                             alt="Profile Picture" />
-                        <h5 class="card-title mb-0">{{ user.get_user_fullname }}</h5>
-                        <div class="text-muted mb-2">{{ user.email }}</div>
+                        <h5 class="card-title mb-0 text-black">{{ user.get_user_fullname }}</h5>
+                        <div class="text-muted mb-2 text-primary">{{ user.email }}</div>
 
                         <div>
                             <a class="btn btn-primary btn-sm" href="{% url 'profile' %}">Edit Profile</a>
@@ -113,19 +125,19 @@
                             <table class="table mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Description</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
+                                        <th class="no-wrap">Date</th>
+                                        <th class="no-wrap">Description</th>
+                                        <th class="no-wrap">Amount</th>
+                                        <th class="no-wrap">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for transaction in transactions %}
                                     <tr>
-                                        <td>{{transaction.timestamp}}</td>
-                                        <td>{{transaction.transaction_type}}</td>
-                                        <td>{{transaction.amount}}</td>
-                                        <td><span
+                                        <td class="no-wrap">{{transaction.timestamp|date:"M. d"}}</td>
+                                        <td class="no-wrap">{{transaction.transaction_type}}</td>
+                                        <td class="no-wrap">${{transaction.amount}}</td>
+                                        <td class="no-wrap"><span
                                                 class="badge {% if transaction.status == 'Pending' %} bg-warning {% else %} bg-success {% endif %}">{{transaction.status}}</span>
                                         </td>
                                     </tr>

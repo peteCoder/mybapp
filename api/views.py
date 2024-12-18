@@ -663,11 +663,13 @@ def update_profile_api_view(request):
 @api_view(['POST'])
 def request_payment_method_api_view(request):
 
-    send_mail_for_payment_options(
-        to_email=request.user.email,
-        message="Here are your payment options. You can pay using the following payment options: ",
-        subject="Payment options",
-    )
+    # send_mail_for_payment_options(
+    #     to_email=request.user.email,
+    #     message="Here are your payment options. You can pay using the following payment options: ",
+    #     subject="Payment options",
+    # )
+
+    
     
     return Response({"message": "An email has been sent to you containing the payment options.", 'success': True}, status=status.HTTP_200_OK)
 

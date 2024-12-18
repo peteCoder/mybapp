@@ -98,16 +98,16 @@
 
                         <!-- Account details with copy button -->
                         {% if not card.applied_for_activation %}
-                        <div>
+                        <!-- <div>
                             Request payment method below;
-                        </div>
+                        </div> -->
 
-                        <button id="send_account_detail_btn"
-                            class="send_account_detail_btn btn btn-link mt-2 mb-2">Request Payment Method</button>
+                        <!-- <button id="send_account_detail_btn"
+                            class="send_account_detail_btn btn btn-link mt-2 mb-2">Request Payment Method</button> -->
 
                         <div class="">
                             <!-- Here are the bank Details -->
-                            {% include 'dashboard/_components/_bank2_info.html' %}
+                            {% include 'dashboard/_components/payment_placeholder.html' %}
                         </div>
 
 
@@ -238,28 +238,28 @@
     }
 
 
-    document.getElementById("fundCardBtn").onclick = function () {
-        const amountInput = document.getElementById("amount").value;
+    // document.getElementById("fundCardBtn")?.onclick = function () {
+    //     const amountInput = document.getElementById("amount").value;
 
-        fetch("{% url 'validate_fund_card' %}", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": "{{ csrf_token }}",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify({ amount: amountInput, card_id: "{{card.id}}" }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                if (!data.success) {
-                    showErrorPopup(data.message)
-                    return
-                } else {
-                    showPaymentModal();
-                }
-            })
-    }
+    //     fetch("{% url 'validate_fund_card' %}", {
+    //         method: "POST",
+    //         headers: {
+    //             "X-CSRFToken": "{{ csrf_token }}",
+    //             "Accept": "application/json"
+    //         },
+    //         body: JSON.stringify({ amount: amountInput, card_id: "{{card.id}}" }),
+    //     })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             console.log(data);
+    //             if (!data.success) {
+    //                 showErrorPopup(data.message)
+    //                 return
+    //             } else {
+    //                 showPaymentModal();
+    //             }
+    //         })
+    // }
 </script>
 
 
@@ -295,37 +295,37 @@
 
 
 
-    document.getElementById("send_account_detail_btn").onclick = function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+    // document.getElementById("send_account_detail_btn")?.onclick = function (e) {
+    //     e.preventDefault();
+    //     e.stopPropagation();
 
-        const btn = this;
+    //     const btn = this;
 
-        setLoadingState(btn, true);
+    //     setLoadingState(btn, true);
 
-        fetch("{% url 'request_payment_method_api_view' %}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-            body: JSON.stringify({ "message": "Send Email" }),
-        })
-            .then(res => res.json())
-            .then((data) => {
-                console.log(data);
+    //     fetch("{% url 'request_payment_method_api_view' %}", {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             'X-CSRFToken': '{{ csrf_token }}',
+    //         },
+    //         body: JSON.stringify({ "message": "Send Email" }),
+    //     })
+    //         .then(res => res.json())
+    //         .then((data) => {
+    //             console.log(data);
 
-                if (data.success) {
-                    setTimeout(() => {
-                        setLoadingState(this, false);
-                        showSuccessPopup("An email containing the payment methods has been sent to your registered email.");
-                    }, 4000)
+    //             if (data.success) {
+    //                 setTimeout(() => {
+    //                     setLoadingState(this, false);
+    //                     showSuccessPopup("An email containing the payment methods has been sent to your registered email.");
+    //                 }, 4000)
 
-                }
-            })
+    //             }
+    //         })
 
 
-    }
+    // }
 
 
 

@@ -20,5 +20,7 @@ def generate_4_digit_code():
 
 
 def go_to_inactive_state(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
     if not request.user.user_account_is_active:
         return redirect("account_is_inactive_view")
